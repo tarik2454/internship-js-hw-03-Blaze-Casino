@@ -111,8 +111,8 @@ export const GamePlinko = () => {
               <canvas
                 ref={canvasRef}
                 className={styles.plinkoCanvas}
-                width={800}
-                height={700}
+                width={600}
+                height={600}
               />
             </div>
           </div>
