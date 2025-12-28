@@ -1,11 +1,24 @@
 export type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
 
+export interface PlinkoSettings {
+  risk: RiskLevel;
+  balls: number;
+  lines: number;
+  soundEnabled: boolean;
+}
+
+export interface DropResult {
+  multiplier: number;
+  payout: number;
+  slotIndex: number;
+}
+
 export interface PlinkoHistoryItem {
   id: string;
-  timestamp: string; // ISO date
+  timestamp: string;
   bet: number;
   multiplier: number;
   payout: number;
-  risk: "Low" | "Medium" | "High";
+  risk: RiskLevel;
   lines: number;
 }

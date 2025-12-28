@@ -64,4 +64,19 @@ const LINES = [
   },
 ];
 
-export { type RiskLevel, RISK_ORDER, BALS, LINES };
+export const BASE_MULTIPLIERS: Record<RiskLevel, number[]> = {
+  LOW: [16, 9, 2, 1.4, 1.4, 1.2, 1.1, 1, 0.5, 1, 1.1, 1.2, 1.4, 1.4, 2, 9, 16],
+  MEDIUM: [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.3, 0.5, 1, 1.5, 3, 5, 10, 41, 110],
+  HIGH: [
+    1000, 130, 26, 9, 4, 2, 0.2, 0.2, 0.2, 0.2, 0.2, 2, 4, 9, 26, 130, 1000,
+  ],
+};
+
+export const MULTIPLIER_THEME = {
+  red: "#ef4444",
+  orange: "#f97316",
+  yellow: "#eab308",
+  green: "#22c55e",
+};
+
+export { RISK_ORDER, BALS, LINES };

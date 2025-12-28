@@ -6,7 +6,8 @@ import type {
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
+  // baseURL: "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
+  baseURL: "http://localhost:3000/api",
 });
 
 API.interceptors.response.use(

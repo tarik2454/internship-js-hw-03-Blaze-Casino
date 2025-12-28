@@ -3,13 +3,41 @@
 .gamePlinko {
   display: flex;
   flex-direction: column;
+  color: #fff;
+}
+
+.mainTitle {
+  margin-bottom: 24px;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .gameInner {
   display: grid;
   grid-template-columns: 1fr 218px;
-  margin-bottom: 24px;
+  align-items: start;
   gap: 24px;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settingsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .gameAreaWrapper {
@@ -19,11 +47,305 @@
 }
 
 .gameArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 500px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-14);
+  background: linear-gradient(135deg, #0f172b 0%, #1d293d 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.plinkoCanvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* History Items */
+.cardDropsList {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  padding-right: 4px; /* Space for scrollbar */
+  overflow-y: auto;
+  gap: 8px;
+}
+
+.dropItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background: var(--color-bg-input);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--color-primary);
+    background: rgba(21, 93, 252, 0.1);
+  }
+}
+
+.dropMultiplier {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.dropInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.dropPayout {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cardDropsEmpty {
+  padding: 24px;
+  color: #90a1b9;
+  font-size: 14px;
+  text-align: center;
+}
+
+.cardPlinkoTitle {
+  margin-bottom: 0px;
+  color: var(--color-text-label);
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+}
+
+.cardTitle {
+  margin-bottom: 12px;
+  color: var(--color-text-label);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card {
+  padding: 16px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-10);
+  background: #1f2937;
+}
+
+/* Risk Controls */
+.cardRisk {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 8px;
+}
+
+.cardRiskButton {
+  height: 40px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background-color: #374151;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-primary);
+    background-color: #4b5563;
+  }
+}
+
+.cardRiskValue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background-color: #374151;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Balls & Lines Groups */
+.ballsGroup,
+.linesGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.ballsGroup {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.linesGroup {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ballBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 4px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background: #374151;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #4b5563;
+  }
+
+  &.active {
+    border-color: var(--color-primary);
+    background: rgba(30, 64, 175, 0.3); /* Blueish tint */
+    box-shadow: 0 0 0 1px var(--color-primary) inset;
+    color: #fff;
+  }
+}
+
+.ballQuantity {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.ballCost {
+  font-size: 11px;
+}
+
+.lineBtn {
+  height: 40px;
+}
+
+.startBtn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 16px 0;
+  border: none;
+  border-radius: var(--radius-8);
+  background: #22c55e;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: #16a34a;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.gameAreaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.gameArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 463px;
+  padding: 20px;
+  overflow: hidden;
   border: 2px solid #ad46ff4d;
   border-radius: var(--radius-14);
   background: linear-gradient(135deg, #0f172b 0%, #1d293d 100%);
+}
+
+.plinkoCanvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// Стили для пинов (опционально, если нужно)
+.pinRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.pin {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ad46ff;
+}
+
+// Стили для слотов множителей
+.slots {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 0 8px;
+  overflow-x: auto;
+  gap: 4px;
+}
+
+.slot {
+  flex-shrink: 0;
+  min-width: 20px;
+  padding: 8px 1px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-8);
+  color: #fff;
+  font-weight: 700;
+  font-size: 8px;
+  text-align: center;
+  transition: var(--transition-base);
+}
+
+// 🔴 Красный: высокие множители (≥41x)
+.slotred {
+  border-color: #ff3333;
+  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
+// 🟠 Оранжевый: средне-высокие (10x-40x)
+.slotorange {
+  border-color: #ff9933;
+  background: linear-gradient(135deg, #ff6900 0%, #ff8800 100%);
+  box-shadow: 0 2px 8px rgba(255, 105, 0, 0.3);
+}
+
+// 🟡 Желтый: средние (2x-9x)
+.slotyellow {
+  border-color: #ffeb3b;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  color: #000;
+}
+
+// 🟢 Зеленый: низкие (<2x)
+.slotgreen {
+  border-color: #33ff33;
+  background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+  box-shadow: 0 2px 8px rgba(0, 255, 0, 0.3);
+  color: #000;
 }
 
 .cardDropsTitle {
