@@ -53,8 +53,6 @@ export const usePlinkoCanvas = ({
         highlightSlot: false,
         betAmount,
         speed: 0.15,
-        // Add random variation to bounce for natural feel
-        // Lower base bounce for metallic, heavier balls
         bounceStrength: 0.2 + Math.random() * 0.1,
       };
 
@@ -67,9 +65,7 @@ export const usePlinkoCanvas = ({
     (ctx: CanvasRenderingContext2D, width: number, height: number) => {
       ctx.fillStyle = "#ffffff";
       const spacing = 50;
-      // Фиксируем позицию слотов внизу
-      const slotY = height - 100; // Отступ снизу для слотов
-      // Рассчитываем startY так, чтобы последний ряд был перед слотами
+      const slotY = height - 100;
       const startY = slotY - (lines + 1) * spacing - 10;
 
       for (let i = 0; i <= lines; i++) {
@@ -95,8 +91,7 @@ export const usePlinkoCanvas = ({
       if (multipliers.length === 0) return;
 
       const spacing = 50;
-      // Фиксируем позицию слотов внизу
-      const slotY = height - 100; // Отступ снизу для слотов
+      const slotY = height - 100;
       const slotHeight = 48;
       const radius = 4;
       const slotWidth = spacing - 2;
@@ -186,7 +181,6 @@ export const usePlinkoCanvas = ({
         }
 
         if (!ball.finished) {
-          // Increased speed for heavier feel
           ball.progress += 0.05;
 
           if (ball.progress >= 1) {
@@ -227,16 +221,8 @@ export const usePlinkoCanvas = ({
 
         const t = ball.progress;
 
-        // Horizontal movement with slight ease-in-out for better feel (optional, but linear is fine too)
-        // Linear: const renderCol = startCol + (endCol - startCol) * t;
-        // Ease-out-quad:
         const renderCol = startCol + (endCol - startCol) * t;
 
-        // Vertical movement with Gravity + Bounce
-        // We want the ball to start with an upward velocity (bounce) and accelerate down (gravity)
-        // Formula: y = y0 + (y1 - y0) * (t^2 * (1 + bounce) - t * bounce) + ...
-        // Simplified for 0 to 1 range mapping to 0 to 1 vertical step:
-        // Reduced bounce for metallic feel (less "floaty")
         const bounce = ball.bounceStrength || 0.25;
         const verticalProgress = t * t * (1 + bounce) - t * bounce;
         const renderRow = currentPathIndex + verticalProgress;

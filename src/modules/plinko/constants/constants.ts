@@ -1,4 +1,11 @@
-import { type RiskLevel } from "../types";
+import { type PlinkoSettings, type RiskLevel } from "../types";
+
+const DEFAULT_SETTINGS: PlinkoSettings = {
+  risk: "LOW",
+  balls: 1,
+  lines: 8,
+  soundEnabled: true,
+};
 
 const RISK_ORDER: RiskLevel[] = ["LOW", "MEDIUM", "HIGH"];
 
@@ -79,4 +86,4 @@ export const MULTIPLIER_THEME = {
   green: "#22c55e",
 };
 
-export { RISK_ORDER, BALS, LINES };
+export { RISK_ORDER, BALS, LINES, DEFAULT_SETTINGS };

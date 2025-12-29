@@ -12,14 +12,14 @@ export const loadSettings = (): PlinkoSettings | null => {
 };
 
 export const saveHistory = (history: PlinkoHistoryItem[]) => {
-  const sliced = history.slice(0, 20); // Согласно ТЗ: максимум 20 записей
+  const sliced = history.slice(0, 100); // Согласно ТЗ: максимум 100 записей
   localStorage.setItem(HISTORY_KEY, JSON.stringify(sliced));
 };
 
 export const loadHistory = (): PlinkoHistoryItem[] => {
   const data = localStorage.getItem(HISTORY_KEY);
   if (!data) return [];
-  
+
   try {
     const parsed = JSON.parse(data);
     // Фильтруем только валидные записи с обязательными полями
@@ -32,7 +32,7 @@ export const loadHistory = (): PlinkoHistoryItem[] => {
             typeof item.bet === "number" &&
             typeof item.balls === "number" &&
             Array.isArray(item.results) &&
-            item.results.length > 0
+            item.results.length > 0,
         )
       : [];
   } catch {

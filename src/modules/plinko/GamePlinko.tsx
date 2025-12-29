@@ -1,7 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import styles from "./GamePlinko.module.scss";
 import { cx } from "../../utils/classNames";
-import { RISK_ORDER, BALS, LINES } from "./constants/constants";
+import {
+  RISK_ORDER,
+  BALS,
+  LINES,
+  DEFAULT_SETTINGS,
+} from "./constants/constants";
 import type { PlinkoSettings, PlinkoHistoryItem, DropResult } from "./types";
 import {
   loadSettings,
@@ -12,13 +17,9 @@ import {
 import { getMultipliers } from "./utills/getMultipliers";
 import { getMultiplierColor } from "./utills/getMultiplierColor";
 import { usePlinkoCanvas } from "./hooks/usePlinkoCanvas";
-
-const DEFAULT_SETTINGS: PlinkoSettings = {
-  risk: "LOW",
-  balls: 1,
-  lines: 8,
-  soundEnabled: true,
-};
+import { useUserStats } from "../../hooks/useUserStats";
+import { toast } from "react-toastify";
+import { GameResultPopup } from "../../shared/components/GameResultPopup";
 
 export const GamePlinko = () => {
   const [settings, setSettings] = useState<PlinkoSettings>(() => {
@@ -29,6 +30,14 @@ export const GamePlinko = () => {
   const [history, setHistory] = useState<PlinkoHistoryItem[]>(() => {
     return loadHistory();
   });
+
+  const [lastResult, setLastResult] = useState<{
+    profit: number;
+    totalPayout: number;
+    timestamp: number;
+  } | null>(null);
+
+  const { updateBalance, balance } = useUserStats();
 
   useEffect(() => {
     saveSettings(settings);
@@ -103,12 +112,39 @@ export const GamePlinko = () => {
           return newHistory.slice(0, 20);
         });
 
+        const totalPayout = currentDropResultsRef.current.reduce(
+          (sum, r) => sum + r.payout,
+          0,
+        );
+
+        const profit = totalPayout - totalCost;
+        updateBalance(totalPayout, {
+          totalWon: profit > 0 ? profit : 0,
+        });
+
+        setLastResult({
+          profit,
+          totalPayout,
+          timestamp: Date.now(),
+        });
+
         currentDropResultsRef.current = [];
       }
     },
   });
 
   const dropBalls = () => {
+    if (balance < totalCost) {
+      return toast.warning("Insufficient balance!");
+    }
+
+    setLastResult(null);
+
+    updateBalance(-totalCost, {
+      totalWagered: totalCost,
+      gamesPlayed: 1,
+    });
+
     currentDropResultsRef.current = [];
 
     for (let i = 0; i < settings.balls; i++) {
@@ -120,6 +156,12 @@ export const GamePlinko = () => {
 
   return (
     <div className={styles.gamePlinko}>
+      {lastResult && (
+        <GameResultPopup
+          profit={lastResult.profit}
+          onClose={() => setLastResult(null)}
+        />
+      )}
       <div className={styles.gameInner}>
         <div className={styles.leftColumn}>
           <div className={styles.gameAreaWrapper}>
@@ -140,8 +182,7 @@ export const GamePlinko = () => {
                 {history.length === 0 ? (
                   <div className={styles.cardDropsEmpty}>No drops yet</div>
                 ) : (
-                  history.map((item) => {
-                    console.log(item);
+                  history.slice(0, 20).map((item) => {
                     const firstResult = item.results[0];
                     if (!firstResult) return null;
 

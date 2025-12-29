@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cx } from "../../utils/classNames";
 import { GameGrid } from "./components/GameGrid";
 import { GameSettingsCard } from "./components/GameSettingsCard";
@@ -6,6 +6,7 @@ import { CurrentGameCard } from "./components/CurrentGameCard";
 import { GameOverlay } from "./components/GameOverlay";
 import { useMinesGame } from "./hooks/useMinesGame";
 import { useUserStats } from "../../hooks/useUserStats";
+import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import styles from "./Mines.module.scss";
 
 export const Mines = () => {
@@ -27,6 +28,7 @@ export const Mines = () => {
     nextMultiplier,
   } = useMinesGame();
 
+  const [lastResult, setLastResult] = useState<number | null>(null);
   const prevGameStateRef = useRef(gameState);
   const betDeductedRef = useRef(false);
 
@@ -50,15 +52,22 @@ export const Mines = () => {
       updateBalance(currentValue, {
         totalWon: profit > 0 ? profit : 0,
       });
+      // Используем setTimeout для асинхронного обновления состояния
+      setTimeout(() => setLastResult(profit), 0);
       betDeductedRef.current = false;
     }
 
     if (prevState === "PLAYING" && gameState === "LOST") {
+      const profit = -betAmount; // Проигрыш = отрицательная ставка
+      // Используем setTimeout для асинхронного обновления состояния
+      setTimeout(() => setLastResult(profit), 0);
       betDeductedRef.current = false;
     }
 
     if (gameState === "IDLE" && prevState !== "IDLE") {
       betDeductedRef.current = false;
+      // Используем setTimeout для асинхронного обновления состояния
+      setTimeout(() => setLastResult(null), 0);
     }
 
     prevGameStateRef.current = gameState;
@@ -81,6 +90,12 @@ export const Mines = () => {
 
   return (
     <section className={styles.mainSection}>
+      {lastResult !== null && (
+        <GameResultPopup
+          profit={lastResult}
+          onClose={() => setLastResult(null)}
+        />
+      )}
       <div className={styles.gameContainer}>
         <div className={styles.gameWrapper}>
           <div className={styles.gameHeader}>

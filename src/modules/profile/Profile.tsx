@@ -53,7 +53,7 @@ export const Profile = () => {
         totalWon: 0,
       });
       await refreshStats();
-      localStorage.removeItem("sky_rush_game_data");
+      localStorage.removeItem("blaze_casino_user_data");
       toast.success("Account reset successfully!");
     } catch (error) {
       console.error("Failed to reset account:", error);

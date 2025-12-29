@@ -9,6 +9,7 @@ import {
   sportsContents,
 } from "./data/icon-contents";
 import { useUserStats } from "../../hooks/useUserStats";
+import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import { cx } from "../../utils/classNames";
 
 export const GameCases = () => {
@@ -17,6 +18,7 @@ export const GameCases = () => {
     index: number;
     offset: number;
   } | null>(null);
+  const [gameResult, setGameResult] = useState<number | null>(null);
   const { balance, updateBalance } = useUserStats();
   const [selectedCase, setSelectedCase] = useState<
     "animal" | "space" | "food" | "sports"
@@ -105,6 +107,8 @@ export const GameCases = () => {
       return toast.warning("Insufficient balance!");
     }
 
+    setGameResult(null); // Сбрасываем предыдущий результат
+
     updateBalance(-casePrice, {
       totalWagered: casePrice,
       gamesPlayed: 1,
@@ -170,6 +174,7 @@ export const GameCases = () => {
         });
 
         const profit = itemValue - casePrice;
+        setGameResult(profit);
         console.log(
           `Game Finished! Case: ${selectedCase} ($${casePrice}), Item Value: $${itemValue}, Result: ${
             profit >= 0 ? "+" : ""
@@ -181,6 +186,12 @@ export const GameCases = () => {
 
   return (
     <section>
+      {gameResult !== null && (
+        <GameResultPopup
+          profit={gameResult}
+          onClose={() => setGameResult(null)}
+        />
+      )}
       <p className={styles.casesTitle}>Select a Case</p>
 
       <div className={styles.casesWrapper}>

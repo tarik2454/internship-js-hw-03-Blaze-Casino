@@ -4,7 +4,7 @@ import { type UserStats, UserStatsContext } from "./UserStatsContextDefinition";
 
 export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
   const [stats, setStats] = useState<UserStats>(() => {
-    const saved = localStorage.getItem("sky_rush_game_data");
+    const saved = localStorage.getItem("blaze_casino_user_data");
     if (saved) {
       return JSON.parse(saved);
     }
@@ -22,7 +22,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     statsRef.current = stats;
-    localStorage.setItem("sky_rush_game_data", JSON.stringify(stats));
+    localStorage.setItem("blaze_casino_user_data", JSON.stringify(stats));
   }, [stats]);
 
   const fetchUserData = async (forceRefresh = false) => {
@@ -30,7 +30,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
       const user = await getCurrentUser();
 
       setStats(() => {
-        const saved = localStorage.getItem("sky_rush_game_data");
+        const saved = localStorage.getItem("blaze_casino_user_data");
         const hasSavedData =
           saved && JSON.parse(saved).username === user.username;
 
@@ -46,7 +46,10 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
           totalWon: user.totalWon ?? 0,
         };
 
-        localStorage.setItem("sky_rush_game_data", JSON.stringify(userData));
+        localStorage.setItem(
+          "blaze_casino_user_data",
+          JSON.stringify(userData),
+        );
         return userData;
       });
     } catch (error) {

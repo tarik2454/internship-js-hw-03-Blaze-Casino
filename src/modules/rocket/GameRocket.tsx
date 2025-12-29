@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import styles from "./GameRocket.module.scss";
 import { useUserStats } from "../../hooks/useUserStats";
+import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import { cx } from "../../utils/classNames";
 
 type GameState = "IDLE" | "BETTING" | "FLYING" | "CRASHED" | "CASHOUT";
@@ -12,12 +13,15 @@ export const GameRocket = () => {
   const [multiplier, setMultiplier] = useState(1);
   const [lastWin, setLastWin] = useState(0);
   const [gameState, setGameState] = useState<GameState>("IDLE");
+  const [gameResult, setGameResult] = useState<number | null>(null);
 
   const requestRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
 
   const startGame = () => {
     if (balance < betAmount) return toast.warning("Insufficient balance!");
+
+    setGameResult(null); // Сбрасываем предыдущий результат
 
     const crashPoint = 1 + Math.pow(Math.random(), 2) * 9;
     updateBalance(-betAmount, {
@@ -37,6 +41,8 @@ export const GameRocket = () => {
       if (currentMultiplier >= crashPoint) {
         setGameState("CRASHED");
         setMultiplier(crashPoint);
+        // Проигрыш = отрицательная ставка
+        setGameResult(-betAmount);
         return;
       }
 
@@ -53,9 +59,11 @@ export const GameRocket = () => {
     updateBalance(winAmount, {
       totalWon: winAmount,
     });
+    const profit = winAmount - betAmount;
     setLastWin(winAmount);
     setMultiplier(finalMultiplier);
     setGameState("CASHOUT");
+    setGameResult(profit);
   };
 
   const cashOut = () => {
@@ -70,6 +78,12 @@ export const GameRocket = () => {
 
   return (
     <section>
+      {gameResult !== null && (
+        <GameResultPopup
+          profit={gameResult}
+          onClose={() => setGameResult(null)}
+        />
+      )}
       <div className={styles.gameArea}>
         <div className={styles.multiplierContainer}>
           <span
