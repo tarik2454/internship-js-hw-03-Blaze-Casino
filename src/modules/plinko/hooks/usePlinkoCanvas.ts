@@ -61,10 +61,13 @@ export const usePlinkoCanvas = ({
   );
 
   const renderBoard = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number) => {
+    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
       ctx.fillStyle = "#ffffff";
-      const startY = 50;
       const spacing = 50;
+      // Фиксируем позицию слотов внизу
+      const slotY = height - 100; // Отступ снизу для слотов
+      // Рассчитываем startY так, чтобы последний ряд был перед слотами
+      const startY = slotY - (lines + 1) * spacing - 10;
 
       for (let i = 0; i <= lines; i++) {
         for (let j = 0; j <= i; j++) {
@@ -85,12 +88,12 @@ export const usePlinkoCanvas = ({
   };
 
   const renderSlots = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number) => {
+    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
       if (multipliers.length === 0) return;
 
-      const startY = 50;
       const spacing = 50;
-      const slotY = startY + (lines + 1) * spacing + 10;
+      // Фиксируем позицию слотов внизу
+      const slotY = height - 100; // Отступ снизу для слотов
       const slotHeight = 48;
       const radius = 4;
       const slotWidth = spacing - 2;
@@ -161,10 +164,10 @@ export const usePlinkoCanvas = ({
   );
 
   const updateAndDrawBalls = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number) => {
-      const startY = 50;
+    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
       const spacing = 50;
-      const slotY = startY + (lines + 1) * spacing + 10;
+      const slotY = height - 100;
+      const startY = slotY - (lines + 1) * spacing - 10;
       const slotHeight = 48;
 
       const balls = activeBallsRef.current;
@@ -231,10 +234,11 @@ export const usePlinkoCanvas = ({
           const slotYCenter = slotY + slotHeight / 2;
 
           if (ball.highlightSlot) {
-            const sx = centerX - spacing / 2 + 2;
+            const slotWidth = spacing - 2;
+            const sx = centerX - slotWidth / 2;
             ctx.strokeStyle = "#fff";
             ctx.lineWidth = 2;
-            ctx.strokeRect(sx - 2, slotY - 2, spacing, slotHeight + 4);
+            ctx.strokeRect(sx - 2, slotY - 2, slotWidth + 4, slotHeight + 4);
 
             ctx.fillStyle = "#fff";
             ctx.font = "bold 16px Arial";
@@ -270,9 +274,9 @@ export const usePlinkoCanvas = ({
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
-      renderBoard(ctx, width);
-      renderSlots(ctx, width);
-      updateAndDrawBalls(ctx, width);
+      renderBoard(ctx, width, height);
+      renderSlots(ctx, width, height);
+      updateAndDrawBalls(ctx, width, height);
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };

@@ -81,19 +81,11 @@
   border-radius: var(--radius-8);
   background: var(--color-bg-input);
   transition: var(--transition-base);
-  gap: 12px;
 
   &:hover {
     border-color: var(--color-primary);
     background: rgba(21, 93, 252, 0.1);
   }
-}
-
-.dropMain {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
 }
 
 .dropMultiplier {
@@ -107,23 +99,10 @@
   opacity: 0.7;
 }
 
-.dropMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 11px;
-  color: #90a1b9;
-}
-
-.dropMetaItem {
-  display: inline-block;
-}
-
 .dropInfo {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  flex-shrink: 0;
 }
 
 .dropPayout {
