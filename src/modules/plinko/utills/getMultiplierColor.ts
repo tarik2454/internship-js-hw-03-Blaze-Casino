@@ -1,14 +1,9 @@
-import { MULTIPLIER_THEME } from "../data/date-plinko";
+import { MULTIPLIER_THEME } from "../constants/constants";
 
-/**
- * Получает цвет слота на основе отношения к максимальному множителю
- * Используется для CSS стилей
- */
 export const getMultiplierColor = (
   multiplier: number,
   maxMultiplier?: number,
 ): string => {
-  // Если передан максимальный множитель, используем отношение
   if (maxMultiplier && maxMultiplier > 0) {
     const ratio = multiplier / maxMultiplier;
     if (ratio >= 0.8) return "red";
@@ -18,7 +13,6 @@ export const getMultiplierColor = (
     return "green";
   }
 
-  // Fallback на абсолютные значения
   if (multiplier >= 41) {
     return MULTIPLIER_THEME.red;
   }
@@ -26,7 +20,6 @@ export const getMultiplierColor = (
     return MULTIPLIER_THEME.orange;
   }
   if (multiplier >= 3) {
-    // Changed 2 to 3 to match TZ "Yellow: 5x, 3x"
     return MULTIPLIER_THEME.yellow;
   }
   return MULTIPLIER_THEME.green;

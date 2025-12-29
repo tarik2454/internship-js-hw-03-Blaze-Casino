@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "./GamePlinko.module.scss";
 import { cx } from "../../utils/classNames";
-import { RISK_ORDER, BALS, LINES } from "./data/date-plinko";
+import { RISK_ORDER, BALS, LINES } from "./constants/constants";
 import type { PlinkoSettings, PlinkoHistoryItem } from "./types";
 import {
   loadSettings,
@@ -108,8 +108,8 @@ export const GamePlinko = () => {
               <canvas
                 ref={canvasRef}
                 className={styles.plinkoCanvas}
-                width={600}
-                height={600}
+                width={1000}
+                height={1000}
               />
             </div>
           </div>

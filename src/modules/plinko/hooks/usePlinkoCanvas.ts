@@ -1,27 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { getMultiplierColor } from "../utills/getMultiplierColor";
-
-interface Ball {
-  path: number[];
-  currentStep: number;
-  progress: number;
-  row: number;
-  col: number;
-  multiplier: number;
-  payout: number;
-  slotIndex: number;
-  finished: boolean;
-  highlightSlot: boolean;
-  finishTime?: number;
-  betAmount: number;
-  speed: number;
-}
-
-interface UsePlinkoCanvasProps {
-  lines: number;
-  multipliers: number[];
-  onBallFinish?: (ball: Ball) => void;
-}
+import type { Ball, UsePlinkoCanvasProps } from "../types";
 
 export const usePlinkoCanvas = ({
   lines,
@@ -85,7 +64,7 @@ export const usePlinkoCanvas = ({
     (ctx: CanvasRenderingContext2D, width: number) => {
       ctx.fillStyle = "#ffffff";
       const startY = 50;
-      const spacing = 30;
+      const spacing = 50;
 
       for (let i = 0; i <= lines; i++) {
         for (let j = 0; j <= i; j++) {
@@ -93,7 +72,7 @@ export const usePlinkoCanvas = ({
           const y = startY + i * spacing;
 
           ctx.beginPath();
-          ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.arc(x, y, 5, 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -110,11 +89,11 @@ export const usePlinkoCanvas = ({
       if (multipliers.length === 0) return;
 
       const startY = 50;
-      const spacing = 30;
+      const spacing = 50;
       const slotY = startY + (lines + 1) * spacing + 10;
-      const slotHeight = 45;
-
-      const slotWidth = spacing - 4;
+      const slotHeight = 48;
+      const radius = 4;
+      const slotWidth = spacing - 2;
 
       multipliers.forEach((multiplier, index) => {
         const centerX = width / 2 + (index - lines / 2) * spacing;
@@ -123,22 +102,59 @@ export const usePlinkoCanvas = ({
         const color = getSlotColor(multiplier);
 
         ctx.fillStyle = color;
-        ctx.fillRect(x, slotY, slotWidth, slotHeight);
 
-        ctx.fillStyle = "#000";
-        ctx.font = "bold 12px Arial";
-        if (multiplier >= 10) ctx.font = "bold 11px Arial";
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(x, slotY, slotWidth, slotHeight, radius);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(x + radius, slotY);
+          ctx.lineTo(x + slotWidth - radius, slotY);
+
+          ctx.quadraticCurveTo(
+            x + slotWidth,
+            slotY,
+            x + slotWidth,
+            slotY + radius,
+          );
+
+          ctx.lineTo(x + slotWidth, slotY + slotHeight - radius);
+
+          ctx.quadraticCurveTo(
+            x + slotWidth,
+            slotY + slotHeight,
+            x + slotWidth - radius,
+            slotY + slotHeight,
+          );
+
+          ctx.lineTo(x + radius, slotY + slotHeight);
+
+          ctx.quadraticCurveTo(
+            x,
+            slotY + slotHeight,
+            x,
+            slotY + slotHeight - radius,
+          );
+
+          ctx.lineTo(x, slotY + radius);
+
+          ctx.quadraticCurveTo(x, slotY, x + radius, slotY);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 16px Inter";
+        if (multiplier >= 10) ctx.font = "bold 16px Inter";
 
         ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        ctx.textBaseline = "hanging";
         const formattedMultiplier =
           multiplier % 1 === 0 ? multiplier.toString() : multiplier.toFixed(1);
 
-        ctx.fillText(
-          formattedMultiplier + "x",
-          centerX,
-          slotY + slotHeight / 2,
-        );
+        const textY = slotY + slotHeight / 2 + -6;
+        ctx.fillText(formattedMultiplier, centerX, textY);
       });
     },
     [lines, multipliers],
@@ -147,9 +163,9 @@ export const usePlinkoCanvas = ({
   const updateAndDrawBalls = useCallback(
     (ctx: CanvasRenderingContext2D, width: number) => {
       const startY = 50;
-      const spacing = 30;
+      const spacing = 50;
       const slotY = startY + (lines + 1) * spacing + 10;
-      const slotHeight = 45;
+      const slotHeight = 48;
 
       const balls = activeBallsRef.current;
 
@@ -229,12 +245,12 @@ export const usePlinkoCanvas = ({
 
           ctx.fillStyle = "#ff0000";
           ctx.beginPath();
-          ctx.arc(centerX, slotYCenter, 6, 0, Math.PI * 2);
+          ctx.arc(centerX, slotYCenter, 7, 0, Math.PI * 2);
           ctx.fill();
         } else {
           ctx.fillStyle = "#ff0000";
           ctx.beginPath();
-          ctx.arc(x, y - 5, 6, 0, Math.PI * 2);
+          ctx.arc(x, y - 5, 7, 0, Math.PI * 2);
           ctx.fill();
         }
       });
