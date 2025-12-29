@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "./GamePlinko.module.scss";
 import { cx } from "../../utils/classNames";
 import { RISK_ORDER, BALS, LINES } from "./constants/constants";
-import type { PlinkoSettings, PlinkoHistoryItem } from "./types";
+import type { PlinkoSettings, PlinkoHistoryItem, DropResult } from "./types";
 import {
   loadSettings,
   saveSettings,
@@ -70,28 +70,47 @@ export const GamePlinko = () => {
 
   const multipliers = getMultipliers(settings.risk, settings.lines);
 
+  const currentDropResultsRef = useRef<DropResult[]>([]);
+
   const { canvasRef, addBall } = usePlinkoCanvas({
     lines: settings.lines,
     multipliers,
     onBallFinish: (ball) => {
-      const historyItem: PlinkoHistoryItem = {
-        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-        timestamp: new Date().toISOString(),
-        bet: ball.betAmount,
+      const result: DropResult = {
         multiplier: ball.multiplier,
         payout: ball.payout,
-        risk: settings.risk,
-        lines: settings.lines,
+        slotIndex: ball.slotIndex,
       };
 
-      setHistory((prev) => {
-        const newHistory = [historyItem, ...prev];
-        return newHistory.slice(0, 100);
-      });
+      currentDropResultsRef.current = [
+        ...currentDropResultsRef.current,
+        result,
+      ];
+
+      if (currentDropResultsRef.current.length === settings.balls) {
+        const historyItem: PlinkoHistoryItem = {
+          id: `drop_${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          bet: BALL_PRICE,
+          balls: settings.balls,
+          risk: settings.risk,
+          lines: settings.lines,
+          results: [...currentDropResultsRef.current],
+        };
+
+        setHistory((prevHistory) => {
+          const newHistory = [historyItem, ...prevHistory];
+          return newHistory.slice(0, 20);
+        });
+
+        currentDropResultsRef.current = [];
+      }
     },
   });
 
   const dropBalls = () => {
+    currentDropResultsRef.current = [];
+
     for (let i = 0; i < settings.balls; i++) {
       setTimeout(() => {
         addBall(BALL_PRICE);
@@ -121,21 +140,50 @@ export const GamePlinko = () => {
                 {history.length === 0 ? (
                   <div className={styles.cardDropsEmpty}>No drops yet</div>
                 ) : (
-                  history.map((item) => (
-                    <div key={item.id} className={styles.dropItem}>
-                      <div
-                        className={styles.dropMultiplier}
-                        style={{ color: getMultiplierColor(item.multiplier) }}
-                      >
-                        {item.multiplier}x
+                  history.map((item) => {
+                    console.log(item);
+                    const firstResult = item.results[0];
+                    if (!firstResult) return null;
+
+                    const totalPayout = item.results.reduce(
+                      (sum, r) => sum + r.payout,
+                      0,
+                    );
+
+                    return (
+                      <div key={item.id} className={styles.dropItem}>
+                        <div className={styles.dropMain}>
+                          <div
+                            className={styles.dropMultiplier}
+                            style={{
+                              color: getMultiplierColor(firstResult.multiplier),
+                            }}
+                          >
+                            {firstResult.multiplier}x
+                          </div>
+                          <div className={styles.dropMeta}>
+                            <span className={styles.dropMetaItem}>
+                              Bet: ${item.bet.toFixed(2)}
+                            </span>
+                            <span className={styles.dropMetaItem}>
+                              Balls: {item.balls}
+                            </span>
+                            <span className={styles.dropMetaItem}>
+                              Risk: {item.risk}
+                            </span>
+                            <span className={styles.dropMetaItem}>
+                              Lines: {item.lines}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={styles.dropInfo}>
+                          <span className={styles.dropPayout}>
+                            ${totalPayout.toFixed(2)}
+                          </span>
+                        </div>
                       </div>
-                      <div className={styles.dropInfo}>
-                        <span className={styles.dropPayout}>
-                          ${item.payout.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

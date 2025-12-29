@@ -17,10 +17,10 @@ export interface PlinkoHistoryItem {
   id: string;
   timestamp: string;
   bet: number;
-  multiplier: number;
-  payout: number;
+  balls: number;
   risk: RiskLevel;
   lines: number;
+  results: DropResult[];
 }
 
 export interface Ball {
