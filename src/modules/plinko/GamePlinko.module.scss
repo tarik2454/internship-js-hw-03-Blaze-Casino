@@ -93,6 +93,17 @@
   font-size: 16px;
 }
 
+.dropMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropMeta {
+  display: flex;
+  gap: 4px;
+}
+
 .dropBallsCount {
   font-weight: 400;
   font-size: 12px;

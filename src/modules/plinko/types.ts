@@ -37,6 +37,7 @@ export interface Ball {
   finishTime?: number;
   betAmount: number;
   speed: number;
+  bounceStrength?: number;
 }
 
 export interface UsePlinkoCanvasProps {

@@ -53,6 +53,9 @@ export const usePlinkoCanvas = ({
         highlightSlot: false,
         betAmount,
         speed: 0.15,
+        // Add random variation to bounce for natural feel
+        // Lower base bounce for metallic, heavier balls
+        bounceStrength: 0.2 + Math.random() * 0.1,
       };
 
       activeBallsRef.current = [...activeBallsRef.current, ball];
@@ -183,7 +186,8 @@ export const usePlinkoCanvas = ({
         }
 
         if (!ball.finished) {
-          ball.progress += 0.08;
+          // Increased speed for heavier feel
+          ball.progress += 0.05;
 
           if (ball.progress >= 1) {
             ball.progress = 0;
@@ -222,8 +226,20 @@ export const usePlinkoCanvas = ({
         }
 
         const t = ball.progress;
-        const renderRow = currentPathIndex + t;
+
+        // Horizontal movement with slight ease-in-out for better feel (optional, but linear is fine too)
+        // Linear: const renderCol = startCol + (endCol - startCol) * t;
+        // Ease-out-quad:
         const renderCol = startCol + (endCol - startCol) * t;
+
+        // Vertical movement with Gravity + Bounce
+        // We want the ball to start with an upward velocity (bounce) and accelerate down (gravity)
+        // Formula: y = y0 + (y1 - y0) * (t^2 * (1 + bounce) - t * bounce) + ...
+        // Simplified for 0 to 1 range mapping to 0 to 1 vertical step:
+        // Reduced bounce for metallic feel (less "floaty")
+        const bounce = ball.bounceStrength || 0.25;
+        const verticalProgress = t * t * (1 + bounce) - t * bounce;
+        const renderRow = currentPathIndex + verticalProgress;
 
         const y = startY + renderRow * spacing;
         const x = width / 2 + (renderCol - renderRow / 2) * spacing;
