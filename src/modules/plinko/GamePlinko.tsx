@@ -66,9 +66,8 @@ export const GamePlinko = () => {
 
   const selectedBall = BALS.find((ball) => ball.quantity === settings.balls);
   const totalCost = selectedBall ? selectedBall.cost : 0;
-  const BALL_PRICE = 2; // Fixed price per ball as per TZ ($2.00)
+  const BALL_PRICE = 2;
 
-  // Memoize multipliers to prevent unnecessary canvas updates happens via hook dependency
   const multipliers = getMultipliers(settings.risk, settings.lines);
 
   const { canvasRef, addBall } = usePlinkoCanvas({
@@ -86,7 +85,6 @@ export const GamePlinko = () => {
       };
 
       setHistory((prev) => {
-        // Add new item to start, limit to 100
         const newHistory = [historyItem, ...prev];
         return newHistory.slice(0, 100);
       });
@@ -104,7 +102,6 @@ export const GamePlinko = () => {
   return (
     <div className={styles.gamePlinko}>
       <div className={styles.gameInner}>
-        {/* Left Column: Game Area + History */}
         <div className={styles.leftColumn}>
           <div className={styles.gameAreaWrapper}>
             <div className={styles.gameArea}>
@@ -118,7 +115,7 @@ export const GamePlinko = () => {
           </div>
 
           <div className={styles.historySection}>
-            <p className={styles.cardPlinkoTitle}>RECENT DROPS</p>
+            <p className={styles.groupTitle}>RECENT DROPS</p>
             <div className={styles.card}>
               <div className={styles.cardDropsList}>
                 {history.length === 0 ? (
@@ -145,9 +142,8 @@ export const GamePlinko = () => {
           </div>
         </div>
 
-        {/* Right Column: Settings Panel */}
         <div className={styles.settingsPanel}>
-          <h1 className={styles.mainTitle}>PLINKO+</h1>
+          <h1 className={styles.groupTitle}>PLINKO+</h1>
           <div className={styles.card}>
             <p className={styles.cardTitle}>RISK</p>
             <div className={styles.cardRisk}>
@@ -168,26 +164,6 @@ export const GamePlinko = () => {
               </button>
             </div>
           </div>
-
-          <div className={styles.card}>
-            <p className={styles.cardTitle}>LINES</p>
-            <div className={styles.linesGroup}>
-              {LINES.map((line) => (
-                <button
-                  key={line.id}
-                  className={cx(
-                    styles.ballBtn,
-                    styles.lineBtn,
-                    settings.lines === line.value && styles.active,
-                  )}
-                  onClick={() => selectLines(line.value)}
-                >
-                  <span className={styles.cardLinesValue}>{line.value}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className={styles.card}>
             <p className={styles.cardTitle}>BALLS</p>
             <div className={styles.ballsGroup}>
@@ -202,6 +178,24 @@ export const GamePlinko = () => {
                 >
                   <span className={styles.ballQuantity}>{ball.quantity}</span>
                   <span className={styles.ballCost}>${ball.cost}.00</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className={styles.card}>
+            <p className={styles.cardTitle}>LINES</p>
+            <div className={styles.linesGroup}>
+              {LINES.map((line) => (
+                <button
+                  key={line.id}
+                  className={cx(
+                    styles.ballBtn,
+                    styles.lineBtn,
+                    settings.lines === line.value && styles.active,
+                  )}
+                  onClick={() => selectLines(line.value)}
+                >
+                  <span className={styles.cardLinesValue}>{line.value}</span>
                 </button>
               ))}
             </div>
