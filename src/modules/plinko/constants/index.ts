@@ -87,3 +87,4 @@ export const MULTIPLIER_THEME = {
 };
 
 export { RISK_ORDER, BALS, LINES, DEFAULT_SETTINGS };
+

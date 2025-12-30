@@ -16,6 +16,9 @@ export interface UserStatsContextType extends UserStats {
   ) => Promise<void>;
   deductBetAndUpdateStats: (betAmount: number) => void;
   refreshStats: () => Promise<void>;
+  isAnyGameActive: boolean;
+  registerGameActivity: (gameId: string, isActive: boolean) => void;
+  unregisterGameActivity: (gameId: string) => void;
 }
 
 export const UserStatsContext = createContext<UserStatsContextType | undefined>(

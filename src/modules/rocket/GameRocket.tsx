@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import styles from "./GameRocket.module.scss";
 import { useRocketGame } from "./hooks/useRocketGame";
 import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import { cx } from "../../utils/classNames";
+import { useUserStats } from "../../context/useUserStats";
 
 export const GameRocket = () => {
+  const { registerGameActivity, unregisterGameActivity } = useUserStats();
   const {
     betAmount,
     multiplier,
@@ -16,6 +19,13 @@ export const GameRocket = () => {
     cashOut,
     setGameResult,
   } = useRocketGame();
+
+  useEffect(() => {
+    registerGameActivity("rocket", isGameActive);
+    return () => {
+      unregisterGameActivity("rocket");
+    };
+  }, [isGameActive, registerGameActivity, unregisterGameActivity]);
 
   return (
     <section>

@@ -71,9 +71,17 @@
   font-size: 16px;
 }
 
+.dropMultiplierWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .dropMain {
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 8px;
 }
 
@@ -285,6 +293,11 @@
   &:hover {
     border-color: var(--color-primary);
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 .cardRiskValue {
@@ -329,6 +342,11 @@
   &:focus,
   &:focus-visible {
     outline: none !important;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 

@@ -1,7 +1,7 @@
 import { memo } from "react";
 import styles from "./GamePlinko.module.scss";
 import { cx } from "../../utils/classNames";
-import { BALS, LINES } from "./constants/constants";
+import { BALS, LINES } from "./constants";
 import { getMultiplierColor } from "./utils/getMultiplierColor";
 import { usePlinkoGame } from "./hooks/usePlinkoGame";
 import { GameResultPopup } from "../../shared/components/GameResultPopup";
@@ -18,6 +18,7 @@ export const GamePlinko = memo(() => {
     selectLines,
     dropBalls,
     setLastResult,
+    isPlaying,
   } = usePlinkoGame();
 
   return (
@@ -60,33 +61,38 @@ export const GamePlinko = memo(() => {
                     return (
                       <div key={item.id} className={styles.dropItem}>
                         <div className={styles.dropMain}>
-                          <div
-                            className={styles.dropMultiplier}
-                            style={{
-                              color: getMultiplierColor(firstResult.multiplier),
-                            }}
-                          >
-                            {firstResult.multiplier}x
+                          <div className={styles.dropMultiplierWrapper}>
+                            <div
+                              className={styles.dropMultiplier}
+                              style={{
+                                color: getMultiplierColor(
+                                  firstResult.multiplier,
+                                ),
+                              }}
+                            >
+                              {firstResult.multiplier}x
+                            </div>
+                            <div className={styles.dropInfo}>
+                              <span className={styles.dropPayout}>
+                                ${totalPayout.toFixed(2)}
+                              </span>
+                            </div>
                           </div>
+
                           <div className={styles.dropMeta}>
                             <span className={styles.dropMetaItem}>
-                              Bet: ${item.bet.toFixed(2)}
+                              Bet: ${item.bet.toFixed(2)} |
                             </span>
                             <span className={styles.dropMetaItem}>
-                              Balls: {item.balls}
+                              Balls: {item.balls} |
                             </span>
                             <span className={styles.dropMetaItem}>
-                              Risk: {item.risk}
+                              Risk: {item.risk} |
                             </span>
                             <span className={styles.dropMetaItem}>
                               Lines: {item.lines}
                             </span>
                           </div>
-                        </div>
-                        <div className={styles.dropInfo}>
-                          <span className={styles.dropPayout}>
-                            ${totalPayout.toFixed(2)}
-                          </span>
                         </div>
                       </div>
                     );
@@ -105,6 +111,7 @@ export const GamePlinko = memo(() => {
               <button
                 className={styles.cardRiskButton}
                 onClick={() => changeRisk(-1)}
+                disabled={isPlaying}
               >
                 -
               </button>
@@ -114,6 +121,7 @@ export const GamePlinko = memo(() => {
               <button
                 className={styles.cardRiskButton}
                 onClick={() => changeRisk(1)}
+                disabled={isPlaying}
               >
                 +
               </button>
@@ -130,6 +138,7 @@ export const GamePlinko = memo(() => {
                     settings.balls === ball.quantity && styles.active,
                   )}
                   onClick={() => selectBalls(ball.quantity)}
+                  disabled={isPlaying}
                 >
                   <span className={styles.ballQuantity}>{ball.quantity}</span>
                   <span className={styles.ballCost}>${ball.cost}.00</span>
@@ -149,6 +158,7 @@ export const GamePlinko = memo(() => {
                     settings.lines === line.value && styles.active,
                   )}
                   onClick={() => selectLines(line.value)}
+                  disabled={isPlaying}
                 >
                   <span className={styles.cardLinesValue}>{line.value}</span>
                 </button>
@@ -156,7 +166,11 @@ export const GamePlinko = memo(() => {
             </div>
           </div>
 
-          <button className={styles.startBtn} onClick={dropBalls}>
+          <button
+            className={styles.startBtn}
+            onClick={dropBalls}
+            disabled={isPlaying}
+          >
             Drop {settings.balls} {settings.balls === 1 ? "Ball" : "Balls"} ($
             {totalCost.toFixed(2)})
           </button>

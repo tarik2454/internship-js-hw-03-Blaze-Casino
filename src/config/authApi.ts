@@ -6,69 +6,123 @@ import type {
 import type { User, AuthResponse } from "../types";
 import { UserSchema, AuthResponseSchema } from "../utils/schemas";
 import { z } from "zod";
-import axios from "axios";
+import axios, { AxiosError, type AxiosInstance } from "axios";
 import { storage } from "../utils/storage";
 import { STORAGE_KEYS } from "../constants/storageKeys";
+import { toast } from "react-toastify";
+import { logger } from "../utils/logger";
 
-export const API = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
-});
+class AuthApi {
+  private api: AxiosInstance;
 
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      storage.remove(STORAGE_KEYS.TOKEN);
-      API.defaults.headers.common.Authorization = "";
+  constructor() {
+    this.api = axios.create({
+      baseURL:
+        import.meta.env.VITE_API_BASE_URL ||
+        "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
+    });
 
-      if (typeof window !== "undefined") {
-        window.location.href = "/auth/login";
-      }
+    this.setupInterceptors();
+  }
+
+  private setupInterceptors(): void {
+    this.api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          storage.remove(STORAGE_KEYS.TOKEN);
+          this.api.defaults.headers.common.Authorization = "";
+          if (typeof window !== "undefined") {
+            window.location.href = "/auth/login";
+          }
+        }
+        return Promise.reject(error);
+      },
+    );
+  }
+
+  hasToken(): boolean {
+    return storage.getString(STORAGE_KEYS.TOKEN) !== null;
+  }
+
+  initAuthToken(): void {
+    const token = storage.getString(STORAGE_KEYS.TOKEN);
+    if (token) {
+      this.api.defaults.headers.common.Authorization = `Bearer ${token}`;
     }
-    return Promise.reject(error);
-  },
-);
+  }
 
-export const hasToken = () => {
-  return storage.getString(STORAGE_KEYS.TOKEN) !== null;
+  async registerUser(data: RegisterFormData) {
+    const response = await this.api.post("/auth/register", data);
+    return response.data;
+  }
+
+  async loginUser(data: LoginFormData): Promise<AuthResponse> {
+    const response = await this.api.post("/auth/login", data);
+    const authData = AuthResponseSchema.parse(response.data);
+    storage.set(STORAGE_KEYS.TOKEN, authData.token);
+    this.api.defaults.headers.common.Authorization = `Bearer ${authData.token}`;
+    return authData;
+  }
+
+  async getCurrentUser(): Promise<User> {
+    const response = await this.api.get(`/users/current?t=${Date.now()}`);
+    return UserSchema.parse(response.data);
+  }
+
+  async logoutUser() {
+    const response = await this.api.post("/auth/logout");
+    storage.remove(STORAGE_KEYS.TOKEN);
+    this.api.defaults.headers.common.Authorization = "";
+    return response.data;
+  }
+
+  async updateUser(data: UpdateUserFormData) {
+    const response = await this.api.patch("/users/update", data);
+    return response.data;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const response = await this.api.get(`/users?t=${Date.now()}`);
+    return z.array(UserSchema).parse(response.data);
+  }
+
+  getApiInstance(): AxiosInstance {
+    return this.api;
+  }
+}
+
+export const authApi = new AuthApi();
+
+export const API = authApi.getApiInstance();
+
+export const hasToken = () => authApi.hasToken();
+export const initAuthToken = () => authApi.initAuthToken();
+export const registerUser = (data: RegisterFormData) =>
+  authApi.registerUser(data);
+export const loginUser = (data: LoginFormData) => authApi.loginUser(data);
+export const getCurrentUser = () => authApi.getCurrentUser();
+export const logoutUser = () => authApi.logoutUser();
+export const updateUser = (data: UpdateUserFormData) =>
+  authApi.updateUser(data);
+export const getAllUsers = () => authApi.getAllUsers();
+
+export const handleApiError = (
+  error: unknown,
+  defaultMessage: string,
+): void => {
+  logger.error(error);
+  if (error instanceof AxiosError) {
+    toast.error(error.response?.data?.message || defaultMessage);
+  } else {
+    toast.error(defaultMessage);
+  }
 };
 
-export const initAuthToken = () => {
-  const token = storage.getString(STORAGE_KEYS.TOKEN);
-  if (token) API.defaults.headers.common.Authorization = `Bearer ${token}`;
+export const handleValidationError = (error: unknown): void => {
+  if (error instanceof Error) {
+    toast.warning(error.message);
+  }
 };
 
 export type { User, AuthResponse };
-
-export const registerUser = async (data: RegisterFormData) =>
-  (await API.post("/auth/register", data)).data;
-
-export const loginUser = async (data: LoginFormData) => {
-  const response = await API.post("/auth/login", data);
-  const authData = AuthResponseSchema.parse(response.data);
-  storage.set(STORAGE_KEYS.TOKEN, authData.token);
-  API.defaults.headers.common.Authorization = `Bearer ${authData.token}`;
-  return authData;
-};
-
-export const getCurrentUser = async (): Promise<User> => {
-  const response = await API.get(`/users/current?t=${Date.now()}`);
-  return UserSchema.parse(response.data);
-};
-
-export const logoutUser = async () => {
-  const response = await API.post("/auth/logout");
-  storage.remove(STORAGE_KEYS.TOKEN);
-  API.defaults.headers.common.Authorization = "";
-  return response.data;
-};
-
-export const updateUser = async (data: UpdateUserFormData) =>
-  (await API.patch("/users/update", data)).data;
-
-export const getAllUsers = async (): Promise<User[]> => {
-  const response = await API.get(`/users?t=${Date.now()}`);
-  return z.array(UserSchema).parse(response.data);
-};

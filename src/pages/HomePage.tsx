@@ -6,9 +6,20 @@ import { Leaderboard } from "../modules/leaderboard/Leaderboard";
 import { useState, Suspense } from "react";
 import { homeTabs } from "../constants/homeTabs";
 import { cx } from "../utils/classNames";
+import { useUserStats } from "../context/useUserStats";
+import { toast } from "react-toastify";
 
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState(homeTabs[0].id);
+  const { isAnyGameActive } = useUserStats();
+
+  const handleTabChange = (tabId: string) => {
+    if (isAnyGameActive && tabId !== activeTab) {
+      toast.warning("Please finish the current game before switching tabs");
+      return;
+    }
+    setActiveTab(tabId);
+  };
 
   return (
     <PageWrapper>
@@ -24,7 +35,8 @@ export const HomePage = () => {
                     styles.gameButton,
                     activeTab === tab.id && styles.isActive,
                   )}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
+                  disabled={isAnyGameActive && tab.id !== activeTab}
                 >
                   {tab.label}
                 </button>

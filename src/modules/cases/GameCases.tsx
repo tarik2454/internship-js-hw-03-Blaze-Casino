@@ -1,11 +1,13 @@
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { OpenAnimal } from "../../shared/icons/open-animal";
 import styles from "./GameCases.module.scss";
 import { useCasesGame } from "./hooks/useCasesGame";
 import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import { cx } from "../../utils/classNames";
+import { useUserStats } from "../../context/useUserStats";
 
 export const GameCases = memo(() => {
+  const { registerGameActivity, unregisterGameActivity } = useUserStats();
   const {
     isAnimating,
     selectedCase,
@@ -18,6 +20,13 @@ export const GameCases = memo(() => {
     calculateItemValue,
     setGameResult,
   } = useCasesGame();
+
+  useEffect(() => {
+    registerGameActivity("cases", isAnimating);
+    return () => {
+      unregisterGameActivity("cases");
+    };
+  }, [isAnimating, registerGameActivity, unregisterGameActivity]);
 
   const getCaseButtonClassName = (
     caseType: "animal" | "space" | "food" | "sports",

@@ -1,4 +1,4 @@
-import { MULTIPLIER_THEME } from "../constants/constants";
+import { MULTIPLIER_THEME } from "../constants";
 
 export const getMultiplierColor = (
   multiplier: number,

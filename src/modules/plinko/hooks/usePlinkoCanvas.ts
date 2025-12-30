@@ -11,6 +11,11 @@ export const usePlinkoCanvas = ({
   const activeBallsRef = useRef<Ball[]>([]);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const isAnimatingRef = useRef<boolean>(false);
+  const onBallFinishRef = useRef(onBallFinish);
+
+  useEffect(() => {
+    onBallFinishRef.current = onBallFinish;
+  }, [onBallFinish]);
 
   const generatePath = useCallback((lines: number): number[] => {
     const path: number[] = [];
@@ -22,49 +27,6 @@ export const usePlinkoCanvas = ({
 
     return path;
   }, []);
-
-  const addBall = useCallback(
-    (betAmount: number) => {
-      const path = generatePath(lines);
-
-      let finalCol = 0;
-      path.forEach((dir) => {
-        finalCol += dir;
-      });
-
-      const slotIndex = finalCol;
-
-      const safeSlotIndex = Math.max(
-        0,
-        Math.min(multipliers.length - 1, slotIndex),
-      );
-      const multiplier = multipliers[safeSlotIndex];
-      const payout = multiplier * betAmount;
-
-      const ball: Ball = {
-        path,
-        currentStep: 0,
-        progress: 0,
-        row: 0,
-        col: 0,
-        multiplier,
-        payout,
-        slotIndex: safeSlotIndex,
-        finished: false,
-        highlightSlot: false,
-        betAmount,
-        speed: 0.15,
-        bounceStrength: 0.2 + Math.random() * 0.1,
-      };
-
-      activeBallsRef.current = [...activeBallsRef.current, ball];
-      
-      if (!isAnimatingRef.current) {
-        startAnimation();
-      }
-    },
-    [lines, multipliers, generatePath],
-  );
 
   const renderBoard = useCallback(
     (ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -198,8 +160,8 @@ export const usePlinkoCanvas = ({
               ball.finishTime = Date.now();
 
               setTimeout(() => {
-                if (onBallFinish) {
-                  onBallFinish(ball);
+                if (onBallFinishRef.current) {
+                  onBallFinishRef.current(ball);
                 }
               }, 2000);
             } else {
@@ -266,7 +228,7 @@ export const usePlinkoCanvas = ({
         }
       });
     },
-    [lines, onBallFinish],
+    [lines],
   );
 
   const startAnimation = useCallback(() => {
@@ -284,7 +246,7 @@ export const usePlinkoCanvas = ({
 
     const animate = () => {
       const balls = activeBallsRef.current;
-      
+
       if (balls.length === 0) {
         ctx.clearRect(0, 0, width, height);
         renderBoard(ctx, width, height);
@@ -307,6 +269,49 @@ export const usePlinkoCanvas = ({
 
     animate();
   }, [renderBoard, renderSlots, updateAndDrawBalls]);
+
+  const addBall = useCallback(
+    (betAmount: number) => {
+      const path = generatePath(lines);
+
+      let finalCol = 0;
+      path.forEach((dir) => {
+        finalCol += dir;
+      });
+
+      const slotIndex = finalCol;
+
+      const safeSlotIndex = Math.max(
+        0,
+        Math.min(multipliers.length - 1, slotIndex),
+      );
+      const multiplier = multipliers[safeSlotIndex];
+      const payout = multiplier * betAmount;
+
+      const ball: Ball = {
+        path,
+        currentStep: 0,
+        progress: 0,
+        row: 0,
+        col: 0,
+        multiplier,
+        payout,
+        slotIndex: safeSlotIndex,
+        finished: false,
+        highlightSlot: false,
+        betAmount,
+        speed: 0.15,
+        bounceStrength: 0.2 + Math.random() * 0.1,
+      };
+
+      activeBallsRef.current = [...activeBallsRef.current, ball];
+
+      if (!isAnimatingRef.current) {
+        startAnimation();
+      }
+    },
+    [lines, multipliers, generatePath, startAnimation],
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;

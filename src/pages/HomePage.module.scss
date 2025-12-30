@@ -49,6 +49,15 @@
     background: linear-gradient(90deg, #155dfc 0%, #9810fa 100%);
     color: white;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    
+    &:hover {
+      background: transparent;
+    }
+  }
 }
 
 .gameContent {

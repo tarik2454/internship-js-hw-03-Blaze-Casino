@@ -1,4 +1,4 @@
-import { BASE_MULTIPLIERS } from "../constants/constants";
+import { BASE_MULTIPLIERS } from "../constants";
 import type { RiskLevel } from "../types";
 
 export function getMultipliers(risk: RiskLevel, lines: number) {

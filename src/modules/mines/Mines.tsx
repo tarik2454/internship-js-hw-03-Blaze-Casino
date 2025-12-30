@@ -10,7 +10,13 @@ import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import styles from "./Mines.module.scss";
 
 export const Mines = () => {
-  const { updateStats, balance, deductBetAndUpdateStats } = useUserStats();
+  const {
+    updateStats,
+    balance,
+    deductBetAndUpdateStats,
+    registerGameActivity,
+    unregisterGameActivity,
+  } = useUserStats();
   const {
     gameState,
     cells,
@@ -68,6 +74,13 @@ export const Mines = () => {
   }, [gameState, betAmount, currentValue, updateStats, balance, resetGame]);
 
   const isPlaying = gameState === "PLAYING";
+
+  useEffect(() => {
+    registerGameActivity("mines", isPlaying);
+    return () => {
+      unregisterGameActivity("mines");
+    };
+  }, [isPlaying, registerGameActivity, unregisterGameActivity]);
   const isGameEnded = gameState === "WON" || gameState === "LOST";
   const canInteract = !isPlaying;
 

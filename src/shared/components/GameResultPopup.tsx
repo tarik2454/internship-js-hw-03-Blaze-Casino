@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { cx } from "../../utils/classNames";
 import styles from "./GameResultPopup.module.scss";
 
@@ -15,6 +15,11 @@ export const GameResultPopup = ({
 }: GameResultPopupProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(true);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 10);
@@ -23,7 +28,7 @@ export const GameResultPopup = ({
       setIsVisible(false);
       setTimeout(() => {
         setShouldRender(false);
-        onClose?.();
+        onCloseRef.current?.();
       }, 300);
     }, autoCloseDelay);
 
@@ -31,13 +36,13 @@ export const GameResultPopup = ({
       clearTimeout(timer);
       clearTimeout(closeTimer);
     };
-  }, [autoCloseDelay, onClose]);
+  }, [autoCloseDelay]);
 
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(() => {
       setShouldRender(false);
-      onClose?.();
+      onCloseRef.current?.();
     }, 300);
   };
 

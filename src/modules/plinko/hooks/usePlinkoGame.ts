@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
-import { RISK_ORDER, BALS, LINES } from "../constants/constants";
-import { handleValidationError } from "../../../utils/errorHandler";
+import { RISK_ORDER, BALS, LINES } from "../constants";
+import { handleValidationError } from "../../../config/authApi";
 import type {
   PlinkoSettings,
   PlinkoHistoryItem,
@@ -34,7 +34,15 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     timestamp: number;
   } | null>(null);
 
-  const { updateStats, balance, deductBetAndUpdateStats } = useUserStats();
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const {
+    updateStats,
+    balance,
+    deductBetAndUpdateStats,
+    registerGameActivity,
+    unregisterGameActivity,
+  } = useUserStats();
 
   useEffect(() => {
     saveSettings(settings);
@@ -43,6 +51,13 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
   useEffect(() => {
     saveHistory(history);
   }, [history]);
+
+  useEffect(() => {
+    registerGameActivity("plinko", isPlaying);
+    return () => {
+      unregisterGameActivity("plinko");
+    };
+  }, [isPlaying, registerGameActivity, unregisterGameActivity]);
 
   const changeRisk = (direction: -1 | 1) => {
     setSettings((current) => {
@@ -94,10 +109,12 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
 
   const currentDropResultsRef = useRef<DropResult[]>([]);
 
-  const { canvasRef, addBall } = usePlinkoCanvas({
-    lines: settings.lines,
-    multipliers,
-    onBallFinish: (ball) => {
+  const onBallFinish = useCallback(
+    (ball: {
+      multiplier: number;
+      payout: number;
+      slotIndex: number;
+    }) => {
       const result: DropResult = {
         multiplier: ball.multiplier,
         payout: ball.payout,
@@ -142,8 +159,16 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
         });
 
         currentDropResultsRef.current = [];
+        setIsPlaying(false);
       }
     },
+    [settings.balls, settings.risk, settings.lines, totalCost, updateStats],
+  );
+
+  const { canvasRef, addBall } = usePlinkoCanvas({
+    lines: settings.lines,
+    multipliers,
+    onBallFinish,
   });
 
   const dropBalls = () => {
@@ -165,6 +190,7 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     deductBetAndUpdateStats(totalCost);
 
     currentDropResultsRef.current = [];
+    setIsPlaying(true);
 
     for (let i = 0; i < settings.balls; i++) {
       setTimeout(() => {
@@ -184,5 +210,6 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     selectLines,
     dropBalls,
     setLastResult,
+    isPlaying,
   };
 };

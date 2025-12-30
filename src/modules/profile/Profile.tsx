@@ -4,14 +4,13 @@ import styles from "./Profile.module.scss";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../shared/icons/user";
 import { toast } from "react-toastify";
-import { updateUser } from "../../config/authApi";
+import { updateUser, handleApiError } from "../../config/authApi";
 import {
   updateUserSchema,
   type UpdateUserFormData,
 } from "../../utils/zodValidation";
 import { useUserStats } from "../../context/useUserStats";
 import { cx } from "../../utils/classNames";
-import { handleApiError } from "../../utils/errorHandler";
 import { storage } from "../../utils/storage";
 import { STORAGE_KEYS } from "../../constants/storageKeys";
 

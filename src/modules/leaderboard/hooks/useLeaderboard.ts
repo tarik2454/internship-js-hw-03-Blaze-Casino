@@ -1,11 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
-import { getAllUsers } from "../../../config/authApi";
+import { getAllUsers, handleApiError } from "../../../config/authApi";
 import type { User } from "../../../types/index";
 import type { LeaderboardUser } from "../types";
 import { useUserStats } from "../../../context/useUserStats";
 import { storage } from "../../../utils/storage";
 import { UserArraySchema } from "../../../utils/schemas";
-import { handleApiError } from "../../../utils/errorHandler";
 import { STORAGE_KEYS } from "../../../constants/storageKeys";
 
 export const useLeaderboard = () => {

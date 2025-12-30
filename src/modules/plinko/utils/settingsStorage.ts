@@ -4,7 +4,7 @@ import {
   PlinkoSettingsSchema,
   PlinkoHistoryArraySchema,
 } from "../../../utils/schemas";
-import { DEFAULT_SETTINGS } from "../constants/constants";
+import { DEFAULT_SETTINGS } from "../constants";
 
 const SETTINGS_KEY = "plinko_settings";
 const HISTORY_KEY = "plinko_history";

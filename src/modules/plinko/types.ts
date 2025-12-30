@@ -65,4 +65,5 @@ export interface UsePlinkoGameReturn {
     totalPayout: number;
     timestamp: number;
   } | null) => void;
+  isPlaying: boolean;
 }

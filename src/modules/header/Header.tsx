@@ -11,7 +11,7 @@ import { Auth } from "../../shared/icons/auth";
 import Modal from "../../shared/components/Modal";
 import { Profile } from "../profile/Profile";
 import { useUserStats } from "../../context/useUserStats";
-import { handleApiError } from "../../utils/errorHandler";
+import { handleApiError } from "../../config/authApi";
 import { storage } from "../../utils/storage";
 import { STORAGE_KEYS } from "../../constants/storageKeys";
 

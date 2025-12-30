@@ -9,7 +9,7 @@ import {
 import { Auth } from "../../shared/icons/auth";
 import { registerUser } from "../../config/authApi";
 import { toast } from "react-toastify";
-import { handleApiError } from "../../utils/errorHandler";
+import { handleApiError } from "../../config/authApi";
 
 import { Input } from "../../shared/components/Input";
 

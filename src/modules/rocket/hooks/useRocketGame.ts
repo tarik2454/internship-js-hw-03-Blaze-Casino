@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import type { GameState, UseRocketGameReturn } from "../types";
 import { useUserStats } from "../../../context/useUserStats";
 import { validateBet } from "../../../utils/validation";
-import { handleValidationError } from "../../../utils/errorHandler";
+import { handleValidationError } from "../../../config/authApi";
 
 export const useRocketGame = (): UseRocketGameReturn => {
   const { balance, updateStats, deductBetAndUpdateStats } = useUserStats();

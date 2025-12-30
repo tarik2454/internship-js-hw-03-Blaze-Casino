@@ -1,4 +1,10 @@
-import { useEffect, useState, useRef, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { getCurrentUser } from "../config/authApi";
 import { type UserStats, UserStatsContext } from "./types";
 import { storage } from "../utils/storage";
@@ -19,6 +25,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
     return storage.get(STORAGE_KEYS.USER_DATA, UserStatsSchema, defaultStats);
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [activeGames, setActiveGames] = useState<Set<string>>(new Set());
 
   const statsRef = useRef(stats);
 
@@ -91,6 +98,31 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshStats = () => fetchUserData(true);
 
+  const registerGameActivity = useCallback(
+    (gameId: string, isActive: boolean) => {
+      setActiveGames((prev) => {
+        const newSet = new Set(prev);
+        if (isActive) {
+          newSet.add(gameId);
+        } else {
+          newSet.delete(gameId);
+        }
+        return newSet;
+      });
+    },
+    [],
+  );
+
+  const unregisterGameActivity = useCallback((gameId: string) => {
+    setActiveGames((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(gameId);
+      return newSet;
+    });
+  }, []);
+
+  const isAnyGameActive = activeGames.size > 0;
+
   return (
     <UserStatsContext.Provider
       value={{
@@ -99,6 +131,9 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
         updateStats,
         deductBetAndUpdateStats,
         refreshStats,
+        isAnyGameActive,
+        registerGameActivity,
+        unregisterGameActivity,
       }}
     >
       {children}
