@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
-import { RISK_ORDER, BALS, DEFAULT_SETTINGS } from "../constants/constants";
+import { RISK_ORDER, BALS, LINES } from "../constants/constants";
 import type {
   PlinkoSettings,
   PlinkoHistoryItem,
@@ -15,12 +15,11 @@ import {
 } from "../utils/settingsStorage";
 import { getMultipliers } from "../utils/getMultipliers";
 import { usePlinkoCanvas } from "./usePlinkoCanvas";
-import { useUserStats } from "../../../hooks/useUserStats";
+import { useUserStats } from "../../../context/useUserStats";
 
 export const usePlinkoGame = (): UsePlinkoGameReturn => {
   const [settings, setSettings] = useState<PlinkoSettings>(() => {
-    const saved = loadSettings();
-    return saved || DEFAULT_SETTINGS;
+    return loadSettings();
   });
 
   const [history, setHistory] = useState<PlinkoHistoryItem[]>(() => {
@@ -55,18 +54,56 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     });
   };
 
+  const validateBallsQuantity = (quantity: number): void => {
+    const validQuantities = BALS.map((ball) => ball.quantity);
+    if (!validQuantities.includes(quantity)) {
+      throw new Error(
+        `Invalid balls quantity. Must be one of: ${validQuantities.join(", ")}`,
+      );
+    }
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new Error("Balls quantity must be a positive integer");
+    }
+  };
+
+  const validateLines = (lines: number): void => {
+    const validLines = LINES.map((line) => line.value);
+    if (!validLines.includes(lines)) {
+      throw new Error(
+        `Invalid lines count. Must be one of: ${validLines.join(", ")}`,
+      );
+    }
+    if (!Number.isInteger(lines) || lines < 1) {
+      throw new Error("Lines count must be a positive integer");
+    }
+  };
+
   const selectBalls = (quantity: number) => {
-    setSettings((current) => ({
-      ...current,
-      balls: quantity,
-    }));
+    try {
+      validateBallsQuantity(quantity);
+      setSettings((current) => ({
+        ...current,
+        balls: quantity,
+      }));
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.warning(error.message);
+      }
+    }
   };
 
   const selectLines = (lines: number) => {
-    setSettings((current) => ({
-      ...current,
-      lines,
-    }));
+    try {
+      validateLines(lines);
+      setSettings((current) => ({
+        ...current,
+        lines,
+      }));
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.warning(error.message);
+      }
+    }
   };
 
   const selectedBall = BALS.find((ball) => ball.quantity === settings.balls);
@@ -130,8 +167,17 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
   });
 
   const dropBalls = () => {
+    if (!Number.isFinite(totalCost) || totalCost < 0) {
+      toast.warning("Invalid total cost");
+      return;
+    }
     if (balance < totalCost) {
-      return toast.warning("Insufficient balance!");
+      toast.warning("Insufficient balance!");
+      return;
+    }
+    if (settings.balls < 1) {
+      toast.warning("Invalid number of balls");
+      return;
     }
 
     setLastResult(null);

@@ -4,14 +4,44 @@ import type { GameStatus, CellStatus, UseMinesGameReturn } from "../types";
 const GRID_SIZE = 25;
 const HOUSE_EDGE = 0.97;
 
+const validateBetAmount = (amount: number, balance?: number): void => {
+  if (amount < 0) {
+    throw new Error("Bet amount cannot be negative");
+  }
+  if (!Number.isFinite(amount)) {
+    throw new Error("Invalid bet amount");
+  }
+  if (balance !== undefined && amount > balance) {
+    throw new Error("Insufficient balance");
+  }
+};
+
+const validateMinesCount = (count: number): void => {
+  if (count < 1 || count > GRID_SIZE - 1) {
+    throw new Error(`Mines count must be between 1 and ${GRID_SIZE - 1}`);
+  }
+  if (!Number.isInteger(count)) {
+    throw new Error("Mines count must be an integer");
+  }
+};
+
+const validateCellIndex = (index: number): void => {
+  if (index < 0 || index >= GRID_SIZE) {
+    throw new Error(`Cell index must be between 0 and ${GRID_SIZE - 1}`);
+  }
+  if (!Number.isInteger(index)) {
+    throw new Error("Cell index must be an integer");
+  }
+};
+
 export const useMinesGame = (): UseMinesGameReturn => {
   const [gameState, setGameState] = useState<GameStatus>("IDLE");
   const [cells, setCells] = useState<CellStatus[]>(
     Array(GRID_SIZE).fill("hidden"),
   );
   const [minePositions, setMinePositions] = useState<number[]>([]);
-  const [betAmount, setBetAmount] = useState<number>(10);
-  const [minesCount, setMinesCount] = useState<number>(3);
+  const [betAmount, setBetAmountState] = useState<number>(10);
+  const [minesCount, setMinesCountState] = useState<number>(3);
   const [revealedCount, setRevealedCount] = useState<number>(0);
 
   const calculateMultiplier = (mines: number, revealed: number): number => {
@@ -49,9 +79,21 @@ export const useMinesGame = (): UseMinesGameReturn => {
     setCells(newCells);
   }, [gameState, cells, minePositions]);
 
+  const setBetAmount = useCallback((amount: number) => {
+    validateBetAmount(amount); // Баланс проверяется на уровне UI
+    setBetAmountState(amount);
+  }, []);
+
+  const setMinesCount = useCallback((count: number) => {
+    validateMinesCount(count);
+    setMinesCountState(count);
+  }, []);
+
   const revealTile = useCallback(
     (index: number) => {
       if (gameState !== "PLAYING" || cells[index] !== "hidden") return;
+
+      validateCellIndex(index);
 
       if (minePositions.includes(index)) {
         const newCells = [...cells];

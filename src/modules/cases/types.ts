@@ -1,5 +1,3 @@
-// Types for Cases module
-
 export type CaseType = "animal" | "space" | "food" | "sports";
 
 export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "gold";

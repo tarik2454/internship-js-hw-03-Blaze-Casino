@@ -17,16 +17,14 @@ export const GameResultPopup = ({
   const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
-    // Fade-in анимация
     const timer = setTimeout(() => setIsVisible(true), 10);
 
-    // Автоматическое закрытие
     const closeTimer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(() => {
         setShouldRender(false);
         onClose?.();
-      }, 300); // Ждем завершения fade-out анимации
+      }, 300);
     }, autoCloseDelay);
 
     return () => {

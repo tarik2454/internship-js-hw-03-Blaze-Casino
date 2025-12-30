@@ -1,20 +1,22 @@
 import { useEffect, useState, useRef, type ReactNode } from "react";
 import { getCurrentUser } from "../config/authApi";
-import { type UserStats, UserStatsContext } from "./UserStatsContextDefinition";
+import { type UserStats, UserStatsContext } from "./types";
+import { safeParseJSON } from "../utils/storage";
+import { UserStatsSchema } from "../utils/schemas";
+import { logger } from "../utils/logger";
 
 export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
+  const defaultStats: UserStats = {
+    username: "",
+    balance: 0,
+    totalWagered: 0,
+    gamesPlayed: 0,
+    totalWon: 0,
+  };
+
   const [stats, setStats] = useState<UserStats>(() => {
     const saved = localStorage.getItem("blaze_casino_user_data");
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      username: "",
-      balance: 0,
-      totalWagered: 0,
-      gamesPlayed: 0,
-      totalWon: 0,
-    };
+    return safeParseJSON(saved, UserStatsSchema, defaultStats);
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,14 +33,14 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
 
       setStats(() => {
         const saved = localStorage.getItem("blaze_casino_user_data");
-        const hasSavedData =
-          saved && JSON.parse(saved).username === user.username;
+        const savedStats = safeParseJSON(saved, UserStatsSchema, defaultStats);
+        const hasSavedData = savedStats.username === user.username;
 
         if (hasSavedData && !forceRefresh) {
-          return JSON.parse(saved);
+          return savedStats;
         }
 
-        const userData = {
+        const userData: UserStats = {
           username: user.username,
           balance: user.balance ?? 100,
           totalWagered: user.totalWagered ?? 0,
@@ -53,7 +55,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
         return userData;
       });
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
+      logger.error("Failed to fetch user data:", error);
     } finally {
       setIsLoading(false);
     }

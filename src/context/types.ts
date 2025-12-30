@@ -8,8 +8,7 @@ export interface UserStats {
   totalWon: number;
 }
 
-export interface UserStatsContextType extends Omit<UserStats, "username"> {
-  username: string;
+export interface UserStatsContextType extends UserStats {
   isLoading: boolean;
   updateStats: (
     amount: number,

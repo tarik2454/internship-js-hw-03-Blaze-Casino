@@ -17,8 +17,6 @@ export const GameRocket = () => {
     setGameResult,
   } = useRocketGame();
 
-  // TODO: enum
-
   return (
     <section>
       {gameResult !== null && (

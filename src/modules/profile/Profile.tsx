@@ -10,8 +10,9 @@ import {
   updateUserSchema,
   type UpdateUserFormData,
 } from "../../utils/zodValidation";
-import { useUserStats } from "../../hooks/useUserStats";
+import { useUserStats } from "../../context/useUserStats";
 import { cx } from "../../utils/classNames";
+import { logger } from "../../utils/logger";
 
 export const Profile = () => {
   const {
@@ -56,7 +57,7 @@ export const Profile = () => {
       localStorage.removeItem("blaze_casino_user_data");
       toast.success("Account reset successfully!");
     } catch (error) {
-      console.error("Failed to reset account:", error);
+      logger.error("Failed to reset account:", error);
       toast.error("Failed to reset account");
     }
   };
@@ -73,7 +74,7 @@ export const Profile = () => {
       await refreshStats();
       toast.success("Profile updated successfully!");
     } catch (err: unknown) {
-      console.error(err);
+      logger.error(err);
       if (err instanceof AxiosError) {
         toast.error(err.response?.data?.message || "Profile update failed");
       } else {

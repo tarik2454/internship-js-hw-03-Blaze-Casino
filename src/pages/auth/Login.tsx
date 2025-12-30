@@ -7,6 +7,7 @@ import { loginSchema, type LoginFormData } from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
 import { loginUser } from "../../config/authApi";
 import { toast } from "react-toastify";
+import { logger } from "../../utils/logger";
 
 import { Input } from "../../shared/components/Input";
 
@@ -32,7 +33,7 @@ export const Login = () => {
 
       navigate("/");
     } catch (err: unknown) {
-      console.error(err);
+      logger.error(err);
       if (err instanceof AxiosError) {
         toast.error(err.response?.data?.message || "Invalid credentials");
       } else {

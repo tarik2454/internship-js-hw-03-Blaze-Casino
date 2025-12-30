@@ -1,9 +1,13 @@
 import { useEffect, useState, useMemo } from "react";
-import { getAllUsers, type User } from "../../../config/authApi";
+import { getAllUsers } from "../../../config/authApi";
+import type { User } from "../../../types";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import type { LeaderboardUser } from "../types";
-import { useUserStats } from "../../../hooks/useUserStats";
+import { useUserStats } from "../../../context/useUserStats";
+import { safeParseJSON } from "../../../utils/storage";
+import { UserArraySchema } from "../../../utils/schemas";
+import { logger } from "../../../utils/logger";
 
 export const useLeaderboard = () => {
   const {
@@ -16,7 +20,7 @@ export const useLeaderboard = () => {
 
   const [apiUsers, setApiUsers] = useState<User[]>(() => {
     const cached = localStorage.getItem("leaderboard_users");
-    return cached ? JSON.parse(cached) : [];
+    return safeParseJSON(cached, UserArraySchema, []);
   });
 
   useEffect(() => {
@@ -27,7 +31,7 @@ export const useLeaderboard = () => {
         setApiUsers(users);
         localStorage.setItem("leaderboard_users", JSON.stringify(users));
       } catch (err: unknown) {
-        console.error("Failed to fetch users:", err);
+        logger.error("Failed to fetch users:", err);
         if (err instanceof AxiosError) {
           toast.error(
             err.response?.data?.message || "Failed to load leaderboard data",
@@ -46,8 +50,8 @@ export const useLeaderboard = () => {
       .map((user) => {
         const isCurrent = user.username === currentUsername;
 
-        const userBalance = isCurrent ? balance : user.balance;
-        const userGames = isCurrent ? gamesPlayed : user.gamesPlayed;
+        const userBalance = isCurrent ? balance : (user.balance ?? 0);
+        const userGames = isCurrent ? gamesPlayed : (user.gamesPlayed ?? 0);
         const userTotalWon = isCurrent ? totalWon : (user.totalWon ?? 0);
         const userTotalWagered = isCurrent
           ? totalWagered

@@ -10,7 +10,8 @@ import { Settings } from "../../shared/icons/settings";
 import { Auth } from "../../shared/icons/auth";
 import Modal from "../../shared/components/Modal";
 import { Profile } from "../profile/Profile";
-import { useUserStats } from "../../hooks/useUserStats";
+import { useUserStats } from "../../context/useUserStats";
+import { logger } from "../../utils/logger";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export const Header = () => {
       localStorage.removeItem("leaderboard_users");
       navigate("/auth/login");
     } catch (error) {
-      console.error("Logout error:", error);
+      logger.error("Logout error:", error);
       toast.error("Failed to log out. Please try again.");
     } finally {
       setIsLoading(false);

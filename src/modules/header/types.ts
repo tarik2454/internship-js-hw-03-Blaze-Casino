@@ -1,2 +1,0 @@
-// Types for Header module
-

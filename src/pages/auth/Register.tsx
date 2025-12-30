@@ -10,6 +10,7 @@ import {
 import { Auth } from "../../shared/icons/auth";
 import { registerUser } from "../../config/authApi";
 import { toast } from "react-toastify";
+import { logger } from "../../utils/logger";
 
 import { Input } from "../../shared/components/Input";
 
@@ -36,7 +37,7 @@ export const Register = () => {
 
       navigate("/auth/login");
     } catch (err: unknown) {
-      console.error(err);
+      logger.error(err);
       if (err instanceof AxiosError) {
         toast.error(err.response?.data?.message || "Registration failed");
       } else {

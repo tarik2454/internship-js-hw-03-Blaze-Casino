@@ -7,7 +7,7 @@ import {
   spaceContents,
   sportsContents,
 } from "../data/icon-contents";
-import { useUserStats } from "../../../hooks/useUserStats";
+import { useUserStats } from "../../../context/useUserStats";
 import styles from "../GameCases.module.scss";
 
 const CASE_PRICES = {
@@ -84,12 +84,44 @@ export const useCasesGame = (): UseCasesGameReturn => {
     return "gold";
   };
 
+  const validateCaseType = (caseType: CaseType): void => {
+    if (!Object.keys(CASE_PRICES).includes(caseType)) {
+      throw new Error(`Invalid case type: ${caseType}`);
+    }
+  };
+
+  const validateCasePrice = (price: number, balance: number): void => {
+    if (price < 0) {
+      throw new Error("Case price cannot be negative");
+    }
+    if (!Number.isFinite(price)) {
+      throw new Error("Invalid case price");
+    }
+    if (price > balance) {
+      throw new Error("Insufficient balance");
+    }
+  };
+
   const handleStartAnimation = () => {
     if (isAnimating) return;
 
+    try {
+      validateCaseType(selectedCase);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.warning(error.message);
+      }
+      return;
+    }
+
     const casePrice = CASE_PRICES[selectedCase];
-    if (balance < casePrice) {
-      return toast.warning("Insufficient balance!");
+    try {
+      validateCasePrice(casePrice, balance);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.warning(error.message);
+      }
+      return;
     }
 
     setGameResult(null);

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { UserStatsContext } from "../context/UserStatsContextDefinition";
+import { UserStatsContext } from "./types";
 
 export const useUserStats = () => {
   const context = useContext(UserStatsContext);
@@ -10,3 +10,4 @@ export const useUserStats = () => {
 
   return context;
 };
+

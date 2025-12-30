@@ -3,11 +3,15 @@ import type {
   RegisterFormData,
   UpdateUserFormData,
 } from "../utils/zodValidation";
+import type { User, AuthResponse } from "../types";
+import { UserSchema, AuthResponseSchema } from "../utils/schemas";
+import { z } from "zod";
 import axios from "axios";
 
 export const API = axios.create({
-  // baseURL: "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
-  baseURL: "http://localhost:3000/api",
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
 });
 
 API.interceptors.response.use(
@@ -36,31 +40,23 @@ export const initAuthToken = () => {
   if (token) API.defaults.headers.common.Authorization = `Bearer ${token}`;
 };
 
-export interface AuthResponse {
-  token: string;
-}
-
-export interface User {
-  _id: string;
-  username: string;
-  gamesPlayed: number;
-  balance: number;
-  totalWagered: number;
-  totalWon: number;
-}
+export type { User, AuthResponse };
 
 export const registerUser = async (data: RegisterFormData) =>
   (await API.post("/auth/register", data)).data;
 
 export const loginUser = async (data: LoginFormData) => {
   const response = await API.post("/auth/login", data);
-  localStorage.setItem("token", response.data.token);
-  API.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
-  return response.data;
+  const authData = AuthResponseSchema.parse(response.data);
+  localStorage.setItem("token", authData.token);
+  API.defaults.headers.common.Authorization = `Bearer ${authData.token}`;
+  return authData;
 };
 
-export const getCurrentUser = async () =>
-  (await API.get(`/users/current?t=${Date.now()}`)).data;
+export const getCurrentUser = async (): Promise<User> => {
+  const response = await API.get(`/users/current?t=${Date.now()}`);
+  return UserSchema.parse(response.data);
+};
 
 export const logoutUser = async () => {
   const response = await API.post("/auth/logout");
@@ -72,5 +68,7 @@ export const logoutUser = async () => {
 export const updateUser = async (data: UpdateUserFormData) =>
   (await API.patch("/users/update", data)).data;
 
-export const getAllUsers = async (): Promise<User[]> =>
-  (await API.get(`/users?t=${Date.now()}`)).data;
+export const getAllUsers = async (): Promise<User[]> => {
+  const response = await API.get(`/users?t=${Date.now()}`);
+  return z.array(UserSchema).parse(response.data);
+};

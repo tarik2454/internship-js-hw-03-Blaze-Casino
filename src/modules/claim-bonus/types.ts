@@ -1,2 +1,0 @@
-// Types for ClaimBonus module
-

@@ -1,11 +1,23 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import type { GameState, UseRocketGameReturn } from "../types";
-import { useUserStats } from "../../../hooks/useUserStats";
+import { useUserStats } from "../../../context/useUserStats";
+
+const validateBetAmount = (amount: number, balance: number): void => {
+  if (amount < 0) {
+    throw new Error("Bet amount cannot be negative");
+  }
+  if (!Number.isFinite(amount)) {
+    throw new Error("Invalid bet amount");
+  }
+  if (amount > balance) {
+    throw new Error("Insufficient balance");
+  }
+};
 
 export const useRocketGame = (): UseRocketGameReturn => {
   const { balance, updateStats } = useUserStats();
-  const [betAmount, setBetAmount] = useState(10);
+  const [betAmount, setBetAmountState] = useState(10);
   const [multiplier, setMultiplier] = useState(1);
   const [lastWin, setLastWin] = useState(0);
   const [gameState, setGameState] = useState<GameState>("IDLE");
@@ -14,8 +26,23 @@ export const useRocketGame = (): UseRocketGameReturn => {
   const requestRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
 
+  const setBetAmount = useCallback(
+    (amount: number) => {
+      validateBetAmount(amount, balance);
+      setBetAmountState(amount);
+    },
+    [balance],
+  );
+
   const startGame = () => {
-    if (balance < betAmount) return toast.warning("Insufficient balance!");
+    try {
+      validateBetAmount(betAmount, balance);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.warning(error.message);
+      }
+      return;
+    }
 
     setGameResult(null);
 

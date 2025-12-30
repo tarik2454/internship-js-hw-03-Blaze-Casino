@@ -4,19 +4,11 @@ import { useCasesGame } from "./hooks/useCasesGame";
 import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import { cx } from "../../utils/classNames";
 
-const CASE_PRICES = {
-  animal: 50,
-  space: 75,
-  food: 40,
-  sports: 60,
-} as const;
-
 export const GameCases = () => {
   const {
     isAnimating,
     selectedCase,
     gameResult,
-    lastResult,
     gameAreaRef,
     setSelectedCase,
     handleStartAnimation,
