@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { getAllUsers } from "../../../config/authApi";
-import type { User } from "../../../types";
+import type { User } from "../../../types/index";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import type { LeaderboardUser } from "../types";
@@ -74,7 +74,7 @@ export const useLeaderboard = () => {
         };
         return leaderboardUser;
       })
-      .sort((a, b) => b.balance - a.balance)
+      .sort((a, b) => (b.balance ?? 0) - (a.balance ?? 0))
       .slice(0, 8)
       .map((user, index): LeaderboardUser => ({ ...user, rank: index + 1 }));
   }, [apiUsers, currentUsername, balance, gamesPlayed, totalWon, totalWagered]);
