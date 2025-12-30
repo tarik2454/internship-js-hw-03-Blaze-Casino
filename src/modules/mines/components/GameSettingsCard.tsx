@@ -1,18 +1,7 @@
 import { cx } from "../../../utils/classNames";
 import { Input } from "../../../shared/components/Input";
+import type { GameSettingsCardProps } from "../types";
 import styles from "./GameSettingsCard.module.scss";
-
-interface GameSettingsCardProps {
-  betAmount: number;
-  setBetAmount: (amount: number) => void;
-  minesCount: number;
-  setMinesCount: (count: number) => void;
-  canInteract: boolean;
-  isPlaying: boolean;
-  currentValue: number;
-  revealedCount: number;
-  onMainButtonClick: () => void;
-}
 
 export const GameSettingsCard = ({
   betAmount,

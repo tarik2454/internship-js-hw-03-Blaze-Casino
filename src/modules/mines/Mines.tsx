@@ -10,7 +10,7 @@ import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import styles from "./Mines.module.scss";
 
 export const Mines = () => {
-  const { updateBalance, balance } = useUserStats();
+  const { updateStats, balance } = useUserStats();
   const {
     gameState,
     cells,
@@ -37,7 +37,7 @@ export const Mines = () => {
 
     if (prevState !== "PLAYING" && gameState === "PLAYING") {
       if (balance >= betAmount) {
-        updateBalance(-betAmount, {
+        updateStats(-betAmount, {
           totalWagered: betAmount,
           gamesPlayed: 1,
         });
@@ -49,7 +49,7 @@ export const Mines = () => {
 
     if (prevState === "PLAYING" && gameState === "WON") {
       const profit = currentValue - betAmount;
-      updateBalance(currentValue, {
+      updateStats(currentValue, {
         totalWon: profit > 0 ? profit : 0,
       });
       // Используем setTimeout для асинхронного обновления состояния
@@ -71,7 +71,7 @@ export const Mines = () => {
     }
 
     prevGameStateRef.current = gameState;
-  }, [gameState, betAmount, currentValue, updateBalance, balance, resetGame]);
+  }, [gameState, betAmount, currentValue, updateStats, balance, resetGame]);
 
   const isPlaying = gameState === "PLAYING";
   const isGameEnded = gameState === "WON" || gameState === "LOST";

@@ -1,11 +1,6 @@
 import { cx } from "../../../utils/classNames";
-import type { GameStatus } from "../hooks/useMinesGame";
+import type { GameOverlayProps } from "../types";
 import styles from "./GameOverlay.module.scss";
-
-interface GameOverlayProps {
-  gameState: GameStatus;
-  currentValue: number;
-}
 
 export const GameOverlay = ({ gameState, currentValue }: GameOverlayProps) => {
   if (gameState === "LOST") {

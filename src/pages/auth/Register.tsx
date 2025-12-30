@@ -6,9 +6,9 @@ import styles from "./Auth.module.scss";
 import {
   registerSchema,
   type RegisterFormData,
-} from "../../utils/zod-validation";
+} from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
-import { registerUser } from "../../config/auth-api";
+import { registerUser } from "../../config/authApi";
 import { toast } from "react-toastify";
 
 import { Input } from "../../shared/components/Input";

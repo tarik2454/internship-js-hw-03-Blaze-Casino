@@ -11,7 +11,7 @@ export interface UserStats {
 export interface UserStatsContextType extends Omit<UserStats, "username"> {
   username: string;
   isLoading: boolean;
-  updateBalance: (
+  updateStats: (
     amount: number,
     extraStats?: Partial<Omit<UserStats, "balance" | "username">>,
   ) => Promise<void>;

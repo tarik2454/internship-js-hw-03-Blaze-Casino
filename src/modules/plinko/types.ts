@@ -45,3 +45,24 @@ export interface UsePlinkoCanvasProps {
   multipliers: number[];
   onBallFinish?: (ball: Ball) => void;
 }
+
+export interface UsePlinkoGameReturn {
+  settings: PlinkoSettings;
+  history: PlinkoHistoryItem[];
+  lastResult: {
+    profit: number;
+    totalPayout: number;
+    timestamp: number;
+  } | null;
+  totalCost: number;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  changeRisk: (direction: -1 | 1) => void;
+  selectBalls: (quantity: number) => void;
+  selectLines: (lines: number) => void;
+  dropBalls: () => void;
+  setLastResult: (result: {
+    profit: number;
+    totalPayout: number;
+    timestamp: number;
+  } | null) => void;
+}

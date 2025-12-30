@@ -4,12 +4,12 @@ import styles from "./Profile.module.scss";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../shared/icons/user";
 import { toast } from "react-toastify";
-import { updateUser } from "../../config/auth-api";
+import { updateUser } from "../../config/authApi";
 import { AxiosError } from "axios";
 import {
   updateUserSchema,
   type UpdateUserFormData,
-} from "../../utils/zod-validation";
+} from "../../utils/zodValidation";
 import { useUserStats } from "../../hooks/useUserStats";
 import { cx } from "../../utils/classNames";
 

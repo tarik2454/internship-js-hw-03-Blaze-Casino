@@ -1,24 +1,5 @@
 import { useState, useCallback } from "react";
-
-export type GameStatus = "IDLE" | "PLAYING" | "WON" | "LOST";
-export type CellStatus = "hidden" | "gem" | "mine";
-
-interface UseMinesGameReturn {
-  gameState: GameStatus;
-  cells: CellStatus[];
-  betAmount: number;
-  setBetAmount: (amount: number) => void;
-  minesCount: number;
-  setMinesCount: (count: number) => void;
-  startGame: () => void;
-  revealTile: (index: number) => void;
-  cashOut: () => void;
-  resetGame: () => void;
-  currentMultiplier: number;
-  nextMultiplier: number;
-  currentValue: number;
-  revealedCount: number;
-}
+import type { GameStatus, CellStatus, UseMinesGameReturn } from "../types";
 
 const GRID_SIZE = 25;
 const HOUSE_EDGE = 0.97;

@@ -1,16 +1,8 @@
 import { cx } from "../../../utils/classNames";
 import { BombIcon } from "../../../shared/icons/bomb";
 import { DiamondIcon } from "../../../shared/icons/diamond";
-import type { CellStatus } from "../hooks/useMinesGame";
+import type { GameGridProps } from "../types";
 import styles from "./GameGrid.module.scss";
-
-interface GameGridProps {
-  className?: string;
-  cells: CellStatus[];
-  onCellClick: (index: number) => void;
-  disabled?: boolean;
-  hidden?: boolean;
-}
 
 export const GameGrid = ({
   className,

@@ -1,4 +1,4 @@
-import { LeaderBoard } from "../../shared/icons/leaserboard";
+import { LeaderBoard } from "../../shared/icons/leaderboard";
 import styles from "./Leaderboard.module.scss";
 import { Place1 } from "../../shared/icons/place1";
 import { Place2 } from "../../shared/icons/place2";

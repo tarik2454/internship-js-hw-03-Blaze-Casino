@@ -3,9 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import styles from "./Auth.module.scss";
-import { loginSchema, type LoginFormData } from "../../utils/zod-validation";
+import { loginSchema, type LoginFormData } from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
-import { loginUser } from "../../config/auth-api";
+import { loginUser } from "../../config/authApi";
 import { toast } from "react-toastify";
 
 import { Input } from "../../shared/components/Input";

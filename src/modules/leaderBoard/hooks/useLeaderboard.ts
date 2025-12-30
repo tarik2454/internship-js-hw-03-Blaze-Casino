@@ -1,13 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { getAllUsers, type User } from "../../../config/auth-api";
+import { getAllUsers, type User } from "../../../config/authApi";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
+import type { LeaderboardUser } from "../types";
 import { useUserStats } from "../../../hooks/useUserStats";
-
-export interface LeaderboardUser extends User {
-  rank: number;
-  winRate: string;
-}
 
 export const useLeaderboard = () => {
   const {

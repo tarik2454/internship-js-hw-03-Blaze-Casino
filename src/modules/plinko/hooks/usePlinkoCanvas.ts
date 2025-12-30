@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { getMultiplierColor } from "../utills/getMultiplierColor";
+import { getMultiplierColor } from "../utils/getMultiplierColor";
 import type { Ball, UsePlinkoCanvasProps } from "../types";
 
 export const usePlinkoCanvas = ({
@@ -251,12 +251,12 @@ export const usePlinkoCanvas = ({
 
           ctx.fillStyle = "#ff0000";
           ctx.beginPath();
-          ctx.arc(centerX, slotYCenter, 7, 0, Math.PI * 2);
+          ctx.arc(centerX, slotYCenter, 9, 0, Math.PI * 2);
           ctx.fill();
         } else {
           ctx.fillStyle = "#ff0000";
           ctx.beginPath();
-          ctx.arc(x, y - 5, 7, 0, Math.PI * 2);
+          ctx.arc(x, y - 5, 8, 0, Math.PI * 2);
           ctx.fill();
         }
       });

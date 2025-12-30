@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, type ReactNode } from "react";
-import { getCurrentUser } from "../config/auth-api";
+import { getCurrentUser } from "../config/authApi";
 import { type UserStats, UserStatsContext } from "./UserStatsContextDefinition";
 
 export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
@@ -63,7 +63,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
     fetchUserData();
   }, []);
 
-  const updateBalance = async (
+  const updateStats = async (
     amount: number,
     extraStats?: Partial<Omit<UserStats, "balance" | "username">>,
   ) => {
@@ -87,7 +87,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
       value={{
         ...stats,
         isLoading,
-        updateBalance,
+        updateStats,
         refreshStats,
       }}
     >

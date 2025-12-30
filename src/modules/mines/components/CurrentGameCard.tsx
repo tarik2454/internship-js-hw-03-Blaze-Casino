@@ -1,13 +1,6 @@
 import { cx } from "../../../utils/classNames";
+import type { CurrentGameCardProps } from "../types";
 import styles from "./CurrentGameCard.module.scss";
-
-interface CurrentGameCardProps {
-  betAmount: number;
-  currentValue: number;
-  nextMultiplier: number;
-  minesCount: number;
-  revealedCount: number;
-}
 
 export const CurrentGameCard = ({
   betAmount,

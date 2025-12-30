@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
-import { logoutUser } from "../../config/auth-api";
+import { logoutUser } from "../../config/authApi";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Logo } from "../../shared/icons/logo";

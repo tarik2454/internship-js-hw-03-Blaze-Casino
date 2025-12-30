@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useUserStats } from "../../hooks/useUserStats";
 
 export const ClaimBonus = () => {
-  const { updateBalance } = useUserStats();
+  const { updateStats } = useUserStats();
   const [lastBonusClaimTime, setLastBonusClaimTime] = useState<number | null>(
     null,
   );
@@ -24,7 +24,7 @@ export const ClaimBonus = () => {
     }
 
     try {
-      await updateBalance(10);
+      await updateStats(10);
       setLastBonusClaimTime(now);
       toast.success("Bonus claimed!");
     } catch (error) {

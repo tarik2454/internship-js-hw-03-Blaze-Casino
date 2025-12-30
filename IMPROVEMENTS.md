@@ -9,23 +9,29 @@
 **Проблема:** URL API захардкожен в коде, что усложняет смену окружений.
 
 **Текущий код:**
+
 ```typescript
-// src/config/auth-api.ts
+// src/config/authApi.ts
 export const API = axios.create({
   baseURL: "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
 });
 ```
 
 **Решение:**
+
 ```typescript
-// src/config/auth-api.ts
+// src/config/authApi.ts
 export const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
 });
 ```
 
 **Действия:**
+
 1. Создать файл `.env.example`:
+
 ```
 VITE_API_BASE_URL=https://backend-internship-js-hw-03-sky-rus.vercel.app/api
 ```
@@ -34,7 +40,8 @@ VITE_API_BASE_URL=https://backend-internship-js-hw-03-sky-rus.vercel.app/api
 3. Добавить `.env.local` в `.gitignore`
 
 **Файлы для изменения:**
-- `src/config/auth-api.ts`
+
+- `src/config/authApi.ts`
 - Создать `.env.example`
 
 ---
@@ -44,6 +51,7 @@ VITE_API_BASE_URL=https://backend-internship-js-hw-03-sky-rus.vercel.app/api
 **Проблема:** Логика обработки ошибок дублируется в каждом компоненте.
 
 **Текущий код:**
+
 ```typescript
 // Повторяется в Login.tsx, Register.tsx, Profile.tsx и т.д.
 catch (err: unknown) {
@@ -57,11 +65,15 @@ catch (err: unknown) {
 ```
 
 **Решение:** Создать утилиту `src/utils/errorHandler.ts`:
+
 ```typescript
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
-export const handleApiError = (error: unknown, defaultMessage: string): string => {
+export const handleApiError = (
+  error: unknown,
+  defaultMessage: string,
+): string => {
   if (error instanceof AxiosError) {
     const message = error.response?.data?.message || defaultMessage;
     toast.error(message);
@@ -78,12 +90,13 @@ export const handleApiError = (error: unknown, defaultMessage: string): string =
 ```
 
 **Файлы для обновления:**
+
 - `src/pages/auth/Login.tsx`
 - `src/pages/auth/Register.tsx`
 - `src/modules/profile/Profile.tsx`
-- `src/modules/leaderBoard/hooks/useLeaderboard.ts`
+- `src/modules/leaderboard/hooks/useLeaderboard.ts`
 - `src/modules/header/Header.tsx`
-- `src/modules/claimBonus/ClaimBonus.tsx`
+- `src/modules/claim-bonus/ClaimBonus.tsx`
 - Создать `src/utils/errorHandler.ts`
 
 ---
@@ -93,6 +106,7 @@ export const handleApiError = (error: unknown, defaultMessage: string): string =
 **Проблема:** `JSON.parse` может выбросить ошибку при некорректных данных, что приведет к крашу приложения.
 
 **Текущий код:**
+
 ```typescript
 // src/context/UserStatsContext.tsx
 const saved = localStorage.getItem("sky_rush_game_data");
@@ -102,13 +116,14 @@ if (saved) {
 ```
 
 **Решение:** Создать утилиту `src/utils/storage.ts`:
+
 ```typescript
 import { z } from "zod";
 
 export const safeParseJSON = <T>(
   value: string | null,
   schema: z.ZodSchema<T>,
-  defaultValue: T
+  defaultValue: T,
 ): T => {
   if (!value) return defaultValue;
   try {
@@ -121,6 +136,7 @@ export const safeParseJSON = <T>(
 ```
 
 **Создать схему для UserStats:**
+
 ```typescript
 // src/utils/schemas.ts
 import { z } from "zod";
@@ -135,6 +151,7 @@ export const UserStatsSchema = z.object({
 ```
 
 **Использование:**
+
 ```typescript
 import { safeParseJSON } from "./utils/storage";
 import { UserStatsSchema } from "./utils/schemas";
@@ -151,8 +168,9 @@ return safeParseJSON(saved, UserStatsSchema, defaultStats);
 ```
 
 **Файлы для обновления:**
+
 - `src/context/UserStatsContext.tsx`
-- `src/modules/leaderBoard/hooks/useLeaderboard.ts`
+- `src/modules/leaderboard/hooks/useLeaderboard.ts`
 - Создать `src/utils/storage.ts`
 - Создать `src/utils/schemas.ts`
 
@@ -163,13 +181,15 @@ return safeParseJSON(saved, UserStatsSchema, defaultStats);
 **Проблема:** Нет валидации ответов от API, что может привести к ошибкам при изменении структуры данных.
 
 **Текущий код:**
+
 ```typescript
-// src/config/auth-api.ts
+// src/config/authApi.ts
 export const getCurrentUser = async () =>
   (await API.get(`/users/current?t=${Date.now()}`)).data;
 ```
 
 **Решение:** Использовать Zod схемы для валидации:
+
 ```typescript
 // src/utils/schemas.ts
 import { z } from "zod";
@@ -183,7 +203,7 @@ export const UserSchema = z.object({
   totalWon: z.number().nullable(),
 });
 
-// src/config/auth-api.ts
+// src/config/authApi.ts
 import { UserSchema } from "../utils/schemas";
 
 export const getCurrentUser = async () => {
@@ -198,7 +218,8 @@ export const getAllUsers = async (): Promise<User[]> => {
 ```
 
 **Файлы для обновления:**
-- `src/config/auth-api.ts`
+
+- `src/config/authApi.ts`
 - Обновить `src/utils/schemas.ts` (добавить UserSchema)
 
 ---
@@ -212,11 +233,13 @@ export const getAllUsers = async (): Promise<User[]> => {
 **Решение:**
 
 1. Установить зависимости:
+
 ```bash
 npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom @vitest/ui
 ```
 
 2. Обновить `package.json`:
+
 ```json
 {
   "scripts": {
@@ -228,25 +251,28 @@ npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-
 ```
 
 3. Создать `vitest.config.ts`:
+
 ```typescript
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react-swc';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
   },
 });
 ```
 
 4. Создать `src/test/setup.ts`:
+
 ```typescript
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 ```
 
 5. Пример теста для хука `src/hooks/__tests__/useUserStats.test.tsx`:
+
 ```typescript
 import { renderHook } from '@testing-library/react';
 import { UserStatsProvider } from '../../context/UserStatsContext';
@@ -264,6 +290,7 @@ describe('useUserStats', () => {
 ```
 
 **Файлы для создания:**
+
 - `vitest.config.ts`
 - `src/test/setup.ts`
 - Тесты для ключевых компонентов и хуков
@@ -275,12 +302,14 @@ describe('useUserStats', () => {
 **Проблема:** Используется базовая конфигурация без type-aware правил.
 
 **Текущий код:**
+
 ```javascript
 // eslint.config.js
 tseslint.configs.recommended,
 ```
 
 **Решение:** Обновить `eslint.config.js`:
+
 ```javascript
 import js from "@eslint/js";
 import globals from "globals";
@@ -303,7 +332,7 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -312,6 +341,7 @@ export default defineConfig([
 ```
 
 **Файлы для обновления:**
+
 - `eslint.config.js`
 
 ---
@@ -321,6 +351,7 @@ export default defineConfig([
 **Проблема:** localStorage обновляется при каждом изменении состояния, что может быть избыточно.
 
 **Текущий код:**
+
 ```typescript
 // src/context/UserStatsContext.tsx
 useEffect(() => {
@@ -330,6 +361,7 @@ useEffect(() => {
 ```
 
 **Решение:** Добавить debounce:
+
 ```bash
 npm install use-debounce
 ```
@@ -349,6 +381,7 @@ useEffect(() => {
 ```
 
 **Файлы для обновления:**
+
 - `src/context/UserStatsContext.tsx`
 
 ---
@@ -358,6 +391,7 @@ useEffect(() => {
 **Проблема:** Избыточность в определении типов.
 
 **Текущий код:**
+
 ```typescript
 // src/context/UserStatsContextDefinition.ts
 export interface UserStatsContextType extends Omit<UserStats, "username"> {
@@ -367,19 +401,21 @@ export interface UserStatsContextType extends Omit<UserStats, "username"> {
 ```
 
 **Решение:** Упростить:
+
 ```typescript
 // src/context/UserStatsContextDefinition.ts
 export interface UserStatsContextType extends UserStats {
   isLoading: boolean;
-  updateBalance: (
+  updateStats: (
     amount: number,
-    extraStats?: Partial<Omit<UserStats, "balance" | "username">>
+    extraStats?: Partial<Omit<UserStats, "balance" | "username">>,
   ) => Promise<void>;
   refreshStats: () => Promise<void>;
 }
 ```
 
 **Файлы для обновления:**
+
 - `src/context/UserStatsContextDefinition.ts`
 
 ---
@@ -389,6 +425,7 @@ export interface UserStatsContextType extends UserStats {
 **Проблема:** Повторяющаяся логика для обработки loading/error состояний.
 
 **Решение:** Создать `src/hooks/useAsync.ts`:
+
 ```typescript
 import { useState, useEffect } from "react";
 
@@ -398,9 +435,9 @@ interface UseAsyncState<T> {
   error: Error | null;
 }
 
-export const useAsync = <T,>(
+export const useAsync = <T>(
   asyncFunction: () => Promise<T>,
-  dependencies: unknown[] = []
+  dependencies: unknown[] = [],
 ): UseAsyncState<T> => {
   const [state, setState] = useState<UseAsyncState<T>>({
     data: null,
@@ -436,6 +473,7 @@ export const useAsync = <T,>(
 ```
 
 **Файлы для создания:**
+
 - `src/hooks/useAsync.ts`
 
 ---
@@ -445,6 +483,7 @@ export const useAsync = <T,>(
 **Проблема:** Дублирование логики кеширования в разных местах.
 
 **Решение:** Создать `src/hooks/useCachedData.ts`:
+
 ```typescript
 import { useState, useEffect } from "react";
 
@@ -455,7 +494,7 @@ interface CacheOptions {
 
 export const useCachedData = <T>(
   fetchFn: () => Promise<T>,
-  options: CacheOptions
+  options: CacheOptions,
 ) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -464,7 +503,7 @@ export const useCachedData = <T>(
   useEffect(() => {
     const cached = localStorage.getItem(options.key);
     const cachedTime = localStorage.getItem(`${options.key}_time`);
-    
+
     if (cached && cachedTime) {
       const age = Date.now() - parseInt(cachedTime, 10);
       if (options.ttl && age < options.ttl) {
@@ -499,6 +538,7 @@ export const useCachedData = <T>(
 ```
 
 **Файлы для создания:**
+
 - `src/hooks/useCachedData.ts`
 
 ---
@@ -508,11 +548,13 @@ export const useCachedData = <T>(
 ### 11. Prettier для форматирования кода
 
 **Решение:**
+
 ```bash
 npm install -D prettier
 ```
 
 Создать `.prettierrc`:
+
 ```json
 {
   "semi": true,
@@ -525,6 +567,7 @@ npm install -D prettier
 ```
 
 Создать `.prettierignore`:
+
 ```
 node_modules
 dist
@@ -532,6 +575,7 @@ dist
 ```
 
 Добавить в `package.json`:
+
 ```json
 {
   "scripts": {
@@ -542,6 +586,7 @@ dist
 ```
 
 **Файлы для создания:**
+
 - `.prettierrc`
 - `.prettierignore`
 
@@ -552,6 +597,7 @@ dist
 **Рекомендации:**
 
 1. Добавить ARIA-атрибуты:
+
 ```typescript
 <button
   aria-label="Start game"
@@ -562,6 +608,7 @@ dist
 ```
 
 2. Улучшить навигацию с клавиатуры:
+
 ```typescript
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === "Enter" || e.key === " ") {
@@ -573,6 +620,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 3. Проверить контрастность цветов (использовать инструменты типа [WebAIM](https://webaim.org/resources/contrastchecker/))
 
 4. Добавить skip links для навигации:
+
 ```typescript
 <a href="#main-content" className="skip-link">
   Skip to main content
@@ -584,11 +632,13 @@ const handleKeyDown = (e: KeyboardEvent) => {
 ### 13. Анализ размера бандла
 
 **Решение:**
+
 ```bash
 npm install -D rollup-plugin-visualizer
 ```
 
 Обновить `vite.config.ts`:
+
 ```typescript
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
@@ -616,6 +666,7 @@ export default defineConfig({
 ```
 
 **Файлы для обновления:**
+
 - `vite.config.ts`
 
 ---
@@ -625,6 +676,7 @@ export default defineConfig({
 **Проблема:** Нет валидации входных данных в игровой логике.
 
 **Решение:** Добавить проверки в `src/modules/mines/hooks/useMinesGame.ts`:
+
 ```typescript
 const setBetAmount = (amount: number) => {
   if (amount < 0) {
@@ -648,6 +700,7 @@ const setMinesCount = (count: number) => {
 ```
 
 **Файлы для обновления:**
+
 - `src/modules/mines/hooks/useMinesGame.ts`
 - Другие игровые модули
 
@@ -658,6 +711,7 @@ const setMinesCount = (count: number) => {
 **Проблема:** `console.log` и `console.error` остаются в production коде.
 
 **Решение:** Использовать утилиту для логирования:
+
 ```typescript
 // src/utils/logger.ts
 const isDevelopment = import.meta.env.DEV;
@@ -677,9 +731,11 @@ export const logger = {
 ```
 
 **Файлы для создания:**
+
 - `src/utils/logger.ts`
 
 **Файлы для обновления:**
+
 - Заменить все `console.log/error/warn` на `logger.log/error/warn`
 
 ---
@@ -687,9 +743,10 @@ export const logger = {
 ## 📋 Чеклист улучшений
 
 ### Высокий приоритет
+
 - [ ] Настроить переменные окружения
   - [ ] Создать `.env.example`
-  - [ ] Обновить `src/config/auth-api.ts`
+  - [ ] Обновить `src/config/authApi.ts`
 - [ ] Создать централизованную обработку ошибок
   - [ ] Создать `src/utils/errorHandler.ts`
   - [ ] Обновить все компоненты с обработкой ошибок
@@ -697,12 +754,13 @@ export const logger = {
   - [ ] Создать `src/utils/storage.ts`
   - [ ] Создать `src/utils/schemas.ts`
   - [ ] Обновить `src/context/UserStatsContext.tsx`
-  - [ ] Обновить `src/modules/leaderBoard/hooks/useLeaderboard.ts`
+  - [ ] Обновить `src/modules/leaderboard/hooks/useLeaderboard.ts`
 - [ ] Добавить валидацию данных API с Zod
   - [ ] Добавить UserSchema в `src/utils/schemas.ts`
-  - [ ] Обновить `src/config/auth-api.ts`
+  - [ ] Обновить `src/config/authApi.ts`
 
 ### Средний приоритет
+
 - [ ] Настроить тестирование (Vitest)
   - [ ] Установить зависимости
   - [ ] Создать `vitest.config.ts`
@@ -721,6 +779,7 @@ export const logger = {
   - [ ] Создать `src/hooks/useCachedData.ts`
 
 ### Низкий приоритет
+
 - [ ] Настроить Prettier
   - [ ] Установить Prettier
   - [ ] Создать `.prettierrc` и `.prettierignore`
@@ -759,4 +818,3 @@ export const logger = {
 4. **Неделя 4:** Низкий приоритет (пункты 11-15)
 
 Каждое изменение должно быть протестировано перед переходом к следующему.
-

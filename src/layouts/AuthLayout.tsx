@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import styles from "./AuthLayout.module.scss";
-import { LogoAuth } from "../shared/icons/logo-auth";
+import { LogoAuth } from "../shared/icons/logoAuth";
 
 export const AuthLayout = () => {
   return (
