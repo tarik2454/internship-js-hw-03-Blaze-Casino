@@ -33,34 +33,46 @@ export const useCachedData = <T>(
               null as T,
             ) as T;
             if (parsedData !== null) {
-              setData(parsedData);
-              setLoading(false);
+              setTimeout(() => {
+                setData(parsedData);
+                setLoading(false);
+              }, 0);
               return;
             }
           } else {
             parsedData = JSON.parse(cached) as T;
-            setData(parsedData);
-            setLoading(false);
+            setTimeout(() => {
+              setData(parsedData);
+              setLoading(false);
+            }, 0);
             return;
           }
         } catch {
+          // Если парсинг не удался, загружаем заново
         }
       }
     }
 
     fetchFn()
       .then((result) => {
-        setData(result);
+        setTimeout(() => {
+          setData(result);
+          setError(null);
+        }, 0);
         localStorage.setItem(options.key, JSON.stringify(result));
         localStorage.setItem(`${options.key}_time`, Date.now().toString());
-        setError(null);
       })
       .catch((err) => {
-        setError(err as Error);
+        setTimeout(() => {
+          setError(err as Error);
+        }, 0);
       })
-      .finally(() => setLoading(false));
-  }, [fetchFn, options.key, options.ttl]);
+      .finally(() => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 0);
+      });
+  }, [fetchFn, options.key, options.ttl, options.schema]);
 
   return { data, loading, error };
 };
-
