@@ -11,7 +11,9 @@ import { Auth } from "../../shared/icons/auth";
 import Modal from "../../shared/components/Modal";
 import { Profile } from "../profile/Profile";
 import { useUserStats } from "../../context/useUserStats";
-import { logger } from "../../utils/logger";
+import { handleApiError } from "../../utils/errorHandler";
+import { storage } from "../../utils/storage";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -26,12 +28,10 @@ export const Header = () => {
       setIsLoading(true);
       await logoutUser();
       toast.success("Successfully logged out!");
-      localStorage.removeItem("sky_rush_game_data");
-      localStorage.removeItem("leaderboard_users");
+      storage.remove(STORAGE_KEYS.LEADERBOARD_USERS);
       navigate("/auth/login");
     } catch (error) {
-      logger.error("Logout error:", error);
-      toast.error("Failed to log out. Please try again.");
+      handleApiError(error, "Failed to log out. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -1,22 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { toast } from "react-toastify";
 import type { GameState, UseRocketGameReturn } from "../types";
 import { useUserStats } from "../../../context/useUserStats";
-
-const validateBetAmount = (amount: number, balance: number): void => {
-  if (amount < 0) {
-    throw new Error("Bet amount cannot be negative");
-  }
-  if (!Number.isFinite(amount)) {
-    throw new Error("Invalid bet amount");
-  }
-  if (amount > balance) {
-    throw new Error("Insufficient balance");
-  }
-};
+import { validateBet } from "../../../utils/validation";
+import { handleValidationError } from "../../../utils/errorHandler";
 
 export const useRocketGame = (): UseRocketGameReturn => {
-  const { balance, updateStats } = useUserStats();
+  const { balance, updateStats, deductBetAndUpdateStats } = useUserStats();
   const [betAmount, setBetAmountState] = useState(10);
   const [multiplier, setMultiplier] = useState(1);
   const [lastWin, setLastWin] = useState(0);
@@ -28,7 +17,7 @@ export const useRocketGame = (): UseRocketGameReturn => {
 
   const setBetAmount = useCallback(
     (amount: number) => {
-      validateBetAmount(amount, balance);
+      validateBet(amount, balance);
       setBetAmountState(amount);
     },
     [balance],
@@ -36,21 +25,16 @@ export const useRocketGame = (): UseRocketGameReturn => {
 
   const startGame = () => {
     try {
-      validateBetAmount(betAmount, balance);
+      validateBet(betAmount, balance);
     } catch (error) {
-      if (error instanceof Error) {
-        toast.warning(error.message);
-      }
+      handleValidationError(error);
       return;
     }
 
     setGameResult(null);
 
     const crashPoint = 1 + Math.pow(Math.random(), 2) * 9;
-    updateStats(-betAmount, {
-      totalWagered: betAmount,
-      gamesPlayed: 1,
-    });
+    deductBetAndUpdateStats(betAmount);
 
     setGameState("FLYING");
     setMultiplier(1);
@@ -109,4 +93,3 @@ export const useRocketGame = (): UseRocketGameReturn => {
     setGameResult,
   };
 };
-

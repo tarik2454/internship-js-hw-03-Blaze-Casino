@@ -1,3 +1,4 @@
+import { memo } from "react";
 import styles from "./GamePlinko.module.scss";
 import { cx } from "../../utils/classNames";
 import { BALS, LINES } from "./constants/constants";
@@ -5,7 +6,7 @@ import { getMultiplierColor } from "./utils/getMultiplierColor";
 import { usePlinkoGame } from "./hooks/usePlinkoGame";
 import { GameResultPopup } from "../../shared/components/GameResultPopup";
 
-export const GamePlinko = () => {
+export const GamePlinko = memo(() => {
   const {
     settings,
     history,
@@ -163,4 +164,4 @@ export const GamePlinko = () => {
       </div>
     </div>
   );
-};
+});

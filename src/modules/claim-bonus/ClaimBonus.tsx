@@ -4,7 +4,7 @@ import { Timer } from "../../shared/icons/timer";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useUserStats } from "../../context/useUserStats";
-import { logger } from "../../utils/logger";
+import { handleApiError } from "../../utils/errorHandler";
 
 export const ClaimBonus = () => {
   const { updateStats } = useUserStats();
@@ -29,8 +29,7 @@ export const ClaimBonus = () => {
       setLastBonusClaimTime(now);
       toast.success("Bonus claimed!");
     } catch (error) {
-      logger.error("Failed to claim bonus:", error);
-      toast.error("Failed to claim bonus");
+      handleApiError(error, "Failed to claim bonus");
     }
   };
   const [timeRemaining, setTimeRemaining] = useState<number>(0);

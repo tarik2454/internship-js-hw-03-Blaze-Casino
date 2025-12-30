@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { OpenAnimal } from "../../shared/icons/open-animal";
 import styles from "./GameCases.module.scss";
 import { useCasesGame } from "./hooks/useCasesGame";
 import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import { cx } from "../../utils/classNames";
 
-export const GameCases = () => {
+export const GameCases = memo(() => {
   const {
     isAnimating,
     selectedCase,
@@ -168,4 +169,4 @@ export const GameCases = () => {
       </div>
     </section>
   );
-};
+});

@@ -1,20 +1,9 @@
 import { useState, useCallback } from "react";
 import type { GameStatus, CellStatus, UseMinesGameReturn } from "../types";
+import { validateBet } from "../../../utils/validation";
 
 const GRID_SIZE = 25;
 const HOUSE_EDGE = 0.97;
-
-const validateBetAmount = (amount: number, balance?: number): void => {
-  if (amount < 0) {
-    throw new Error("Bet amount cannot be negative");
-  }
-  if (!Number.isFinite(amount)) {
-    throw new Error("Invalid bet amount");
-  }
-  if (balance !== undefined && amount > balance) {
-    throw new Error("Insufficient balance");
-  }
-};
 
 const validateMinesCount = (count: number): void => {
   if (count < 1 || count > GRID_SIZE - 1) {
@@ -80,7 +69,7 @@ export const useMinesGame = (): UseMinesGameReturn => {
   }, [gameState, cells, minePositions]);
 
   const setBetAmount = useCallback((amount: number) => {
-    validateBetAmount(amount); // Баланс проверяется на уровне UI
+    validateBet(amount); // Баланс проверяется на уровне UI
     setBetAmountState(amount);
   }, []);
 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { z } from "zod";
-import { safeParseJSON } from "../utils/storage";
+import { storage, safeParseJSON } from "../utils/storage";
 
 interface CacheOptions {
   ttl?: number;
@@ -17,8 +17,8 @@ export const useCachedData = <T>(
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const cached = localStorage.getItem(options.key);
-    const cachedTime = localStorage.getItem(`${options.key}_time`);
+    const cached = storage.getString(options.key);
+    const cachedTime = storage.getString(`${options.key}_time`);
 
     if (cached && cachedTime) {
       const age = Date.now() - parseInt(cachedTime, 10);
@@ -33,18 +33,18 @@ export const useCachedData = <T>(
               null as T,
             ) as T;
             if (parsedData !== null) {
-              setTimeout(() => {
+              startTransition(() => {
                 setData(parsedData);
                 setLoading(false);
-              }, 0);
+              });
               return;
             }
           } else {
             parsedData = JSON.parse(cached) as T;
-            setTimeout(() => {
+            startTransition(() => {
               setData(parsedData);
               setLoading(false);
-            }, 0);
+            });
             return;
           }
         } catch {
@@ -55,22 +55,22 @@ export const useCachedData = <T>(
 
     fetchFn()
       .then((result) => {
-        setTimeout(() => {
+        startTransition(() => {
           setData(result);
           setError(null);
-        }, 0);
-        localStorage.setItem(options.key, JSON.stringify(result));
-        localStorage.setItem(`${options.key}_time`, Date.now().toString());
+        });
+        storage.set(options.key, result);
+        storage.set(`${options.key}_time`, Date.now().toString());
       })
       .catch((err) => {
-        setTimeout(() => {
+        startTransition(() => {
           setError(err as Error);
-        }, 0);
+        });
       })
       .finally(() => {
-        setTimeout(() => {
+        startTransition(() => {
           setLoading(false);
-        }, 0);
+        });
       });
   }, [fetchFn, options.key, options.ttl, options.schema]);
 

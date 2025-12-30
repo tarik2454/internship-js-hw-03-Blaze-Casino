@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { LeaderBoard } from "../../shared/icons/leaderboard";
 import styles from "./Leaderboard.module.scss";
 import { Place1 } from "../../shared/icons/place1";
@@ -6,7 +7,7 @@ import { Place3 } from "../../shared/icons/place3";
 import { useLeaderboard } from "./hooks/useLeaderboard";
 import { cx } from "../../utils/classNames";
 
-export const Leaderboard = () => {
+export const Leaderboard = memo(() => {
   const { leaders, currentUsername } = useLeaderboard();
 
   return (
@@ -67,4 +68,4 @@ export const Leaderboard = () => {
       )}
     </section>
   );
-};
+});

@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "react-toastify";
 import { RISK_ORDER, BALS, LINES } from "../constants/constants";
+import { handleValidationError } from "../../../utils/errorHandler";
 import type {
   PlinkoSettings,
   PlinkoHistoryItem,
@@ -16,6 +17,7 @@ import {
 import { getMultipliers } from "../utils/getMultipliers";
 import { usePlinkoCanvas } from "./usePlinkoCanvas";
 import { useUserStats } from "../../../context/useUserStats";
+import { validateInRange } from "../../../utils/validation";
 
 export const usePlinkoGame = (): UsePlinkoGameReturn => {
   const [settings, setSettings] = useState<PlinkoSettings>(() => {
@@ -32,7 +34,7 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     timestamp: number;
   } | null>(null);
 
-  const { updateStats, balance } = useUserStats();
+  const { updateStats, balance, deductBetAndUpdateStats } = useUserStats();
 
   useEffect(() => {
     saveSettings(settings);
@@ -54,55 +56,30 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     });
   };
 
-  const validateBallsQuantity = (quantity: number): void => {
-    const validQuantities = BALS.map((ball) => ball.quantity);
-    if (!validQuantities.includes(quantity)) {
-      throw new Error(
-        `Invalid balls quantity. Must be one of: ${validQuantities.join(", ")}`,
-      );
-    }
-    if (!Number.isInteger(quantity) || quantity < 1) {
-      throw new Error("Balls quantity must be a positive integer");
-    }
-  };
-
-  const validateLines = (lines: number): void => {
-    const validLines = LINES.map((line) => line.value);
-    if (!validLines.includes(lines)) {
-      throw new Error(
-        `Invalid lines count. Must be one of: ${validLines.join(", ")}`,
-      );
-    }
-    if (!Number.isInteger(lines) || lines < 1) {
-      throw new Error("Lines count must be a positive integer");
-    }
-  };
 
   const selectBalls = (quantity: number) => {
     try {
-      validateBallsQuantity(quantity);
+      const validQuantities = BALS.map((ball) => ball.quantity);
+      validateInRange(quantity, validQuantities, "balls quantity");
       setSettings((current) => ({
         ...current,
         balls: quantity,
       }));
     } catch (error) {
-      if (error instanceof Error) {
-        toast.warning(error.message);
-      }
+      handleValidationError(error);
     }
   };
 
   const selectLines = (lines: number) => {
     try {
-      validateLines(lines);
+      const validLines = LINES.map((line) => line.value);
+      validateInRange(lines, validLines, "lines count");
       setSettings((current) => ({
         ...current,
         lines,
       }));
     } catch (error) {
-      if (error instanceof Error) {
-        toast.warning(error.message);
-      }
+      handleValidationError(error);
     }
   };
 
@@ -110,7 +87,10 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
   const totalCost = selectedBall ? selectedBall.cost : 0;
   const BALL_PRICE = 2;
 
-  const multipliers = getMultipliers(settings.risk, settings.lines);
+  const multipliers = useMemo(
+    () => getMultipliers(settings.risk, settings.lines),
+    [settings.risk, settings.lines],
+  );
 
   const currentDropResultsRef = useRef<DropResult[]>([]);
 
@@ -182,10 +162,7 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
 
     setLastResult(null);
 
-    updateStats(-totalCost, {
-      totalWagered: totalCost,
-      gamesPlayed: 1,
-    });
+    deductBetAndUpdateStats(totalCost);
 
     currentDropResultsRef.current = [];
 

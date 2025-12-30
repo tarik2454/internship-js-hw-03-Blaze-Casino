@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, startTransition } from "react";
 import { cx } from "../../utils/classNames";
 import { GameGrid } from "./components/GameGrid";
 import { GameSettingsCard } from "./components/GameSettingsCard";
@@ -10,7 +10,7 @@ import { GameResultPopup } from "../../shared/components/GameResultPopup";
 import styles from "./Mines.module.scss";
 
 export const Mines = () => {
-  const { updateStats, balance } = useUserStats();
+  const { updateStats, balance, deductBetAndUpdateStats } = useUserStats();
   const {
     gameState,
     cells,
@@ -37,10 +37,7 @@ export const Mines = () => {
 
     if (prevState !== "PLAYING" && gameState === "PLAYING") {
       if (balance >= betAmount) {
-        updateStats(-betAmount, {
-          totalWagered: betAmount,
-          gamesPlayed: 1,
-        });
+        deductBetAndUpdateStats(betAmount);
         betDeductedRef.current = true;
       } else {
         resetGame();
@@ -52,19 +49,19 @@ export const Mines = () => {
       updateStats(currentValue, {
         totalWon: profit > 0 ? profit : 0,
       });
-      setTimeout(() => setLastResult(profit), 0);
+      startTransition(() => setLastResult(profit));
       betDeductedRef.current = false;
     }
 
     if (prevState === "PLAYING" && gameState === "LOST") {
       const profit = -betAmount;
-      setTimeout(() => setLastResult(profit), 0);
+      startTransition(() => setLastResult(profit));
       betDeductedRef.current = false;
     }
 
     if (gameState === "IDLE" && prevState !== "IDLE") {
       betDeductedRef.current = false;
-      setTimeout(() => setLastResult(null), 0);
+      startTransition(() => setLastResult(null));
     }
 
     prevGameStateRef.current = gameState;

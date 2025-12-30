@@ -1,13 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { AxiosError } from "axios";
 import styles from "./Auth.module.scss";
 import { loginSchema, type LoginFormData } from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
 import { loginUser } from "../../config/authApi";
 import { toast } from "react-toastify";
-import { logger } from "../../utils/logger";
+import { handleApiError } from "../../utils/errorHandler";
 
 import { Input } from "../../shared/components/Input";
 
@@ -33,12 +32,7 @@ export const Login = () => {
 
       navigate("/");
     } catch (err: unknown) {
-      logger.error(err);
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data?.message || "Invalid credentials");
-      } else {
-        toast.error("Invalid credentials");
-      }
+      handleApiError(err, "Invalid credentials");
     }
   };
 

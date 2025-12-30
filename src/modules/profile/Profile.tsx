@@ -5,14 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../shared/icons/user";
 import { toast } from "react-toastify";
 import { updateUser } from "../../config/authApi";
-import { AxiosError } from "axios";
 import {
   updateUserSchema,
   type UpdateUserFormData,
 } from "../../utils/zodValidation";
 import { useUserStats } from "../../context/useUserStats";
 import { cx } from "../../utils/classNames";
-import { logger } from "../../utils/logger";
+import { handleApiError } from "../../utils/errorHandler";
+import { storage } from "../../utils/storage";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
 
 export const Profile = () => {
   const {
@@ -54,11 +55,10 @@ export const Profile = () => {
         totalWon: 0,
       });
       await refreshStats();
-      localStorage.removeItem("blaze_casino_user_data");
+      storage.remove(STORAGE_KEYS.USER_DATA);
       toast.success("Account reset successfully!");
     } catch (error) {
-      logger.error("Failed to reset account:", error);
-      toast.error("Failed to reset account");
+      handleApiError(error, "Failed to reset account");
     }
   };
 
@@ -74,12 +74,7 @@ export const Profile = () => {
       await refreshStats();
       toast.success("Profile updated successfully!");
     } catch (err: unknown) {
-      logger.error(err);
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data?.message || "Profile update failed");
-      } else {
-        toast.error("Profile update failed");
-      }
+      handleApiError(err, "Profile update failed");
     }
   };
 

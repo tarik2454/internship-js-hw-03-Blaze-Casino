@@ -1,13 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { getAllUsers } from "../../../config/authApi";
 import type { User } from "../../../types/index";
-import { toast } from "react-toastify";
-import { AxiosError } from "axios";
 import type { LeaderboardUser } from "../types";
 import { useUserStats } from "../../../context/useUserStats";
-import { safeParseJSON } from "../../../utils/storage";
+import { storage } from "../../../utils/storage";
 import { UserArraySchema } from "../../../utils/schemas";
-import { logger } from "../../../utils/logger";
+import { handleApiError } from "../../../utils/errorHandler";
+import { STORAGE_KEYS } from "../../../constants/storageKeys";
 
 export const useLeaderboard = () => {
   const {
@@ -19,8 +18,7 @@ export const useLeaderboard = () => {
   } = useUserStats();
 
   const [apiUsers, setApiUsers] = useState<User[]>(() => {
-    const cached = localStorage.getItem("leaderboard_users");
-    return safeParseJSON(cached, UserArraySchema, []);
+    return storage.get(STORAGE_KEYS.LEADERBOARD_USERS, UserArraySchema, []);
   });
 
   useEffect(() => {
@@ -29,16 +27,9 @@ export const useLeaderboard = () => {
         const users = await getAllUsers();
 
         setApiUsers(users);
-        localStorage.setItem("leaderboard_users", JSON.stringify(users));
+        storage.set(STORAGE_KEYS.LEADERBOARD_USERS, users);
       } catch (err: unknown) {
-        logger.error("Failed to fetch users:", err);
-        if (err instanceof AxiosError) {
-          toast.error(
-            err.response?.data?.message || "Failed to load leaderboard data",
-          );
-        } else {
-          toast.error("Failed to load leaderboard data");
-        }
+        handleApiError(err, "Failed to load leaderboard data");
       }
     };
 
@@ -46,37 +37,43 @@ export const useLeaderboard = () => {
   }, [currentUsername]);
 
   const leaders: LeaderboardUser[] = useMemo(() => {
-    return apiUsers
-      .map((user) => {
-        const isCurrent = user.username === currentUsername;
+    const transformed = apiUsers.map((user) => {
+      const isCurrent = user.username === currentUsername;
 
-        const userBalance = isCurrent ? balance : (user.balance ?? 0);
-        const userGames = isCurrent ? gamesPlayed : (user.gamesPlayed ?? 0);
-        const userTotalWon = isCurrent ? totalWon : (user.totalWon ?? 0);
-        const userTotalWagered = isCurrent
-          ? totalWagered
-          : (user.totalWagered ?? 0);
+      const userBalance = isCurrent ? balance : (user.balance ?? 0);
+      const userGames = isCurrent ? gamesPlayed : (user.gamesPlayed ?? 0);
+      const userTotalWon = isCurrent ? totalWon : (user.totalWon ?? 0);
+      const userTotalWagered = isCurrent
+        ? totalWagered
+        : (user.totalWagered ?? 0);
 
-        const winRate =
-          userTotalWagered > 0
-            ? Math.floor((userTotalWon / userTotalWagered) * 100)
-            : 0;
+      const winRate =
+        userTotalWagered > 0
+          ? Math.floor((userTotalWon / userTotalWagered) * 100)
+          : 0;
 
-        const leaderboardUser: LeaderboardUser = {
-          _id: user._id,
-          username: user.username,
-          balance: userBalance,
-          gamesPlayed: userGames,
-          totalWagered: userTotalWagered,
-          totalWon: userTotalWon,
-          rank: 0,
-          winRate: `${winRate}%`,
-        };
-        return leaderboardUser;
-      })
-      .sort((a, b) => (b.balance ?? 0) - (a.balance ?? 0))
-      .slice(0, 8)
-      .map((user, index): LeaderboardUser => ({ ...user, rank: index + 1 }));
+      return {
+        _id: user._id,
+        username: user.username,
+        balance: userBalance,
+        gamesPlayed: userGames,
+        totalWagered: userTotalWagered,
+        totalWon: userTotalWon,
+        winRate: `${winRate}%`,
+      };
+    });
+
+    const sorted = transformed.sort(
+      (a, b) => (b.balance ?? 0) - (a.balance ?? 0),
+    );
+    const topUsers = sorted.slice(0, 8);
+
+    return topUsers.map(
+      (user, index): LeaderboardUser => ({
+        ...user,
+        rank: index + 1,
+      }),
+    );
   }, [apiUsers, currentUsername, balance, gamesPlayed, totalWon, totalWagered]);
 
   return { leaders, currentUsername };

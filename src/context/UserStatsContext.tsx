@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, type ReactNode } from "react";
 import { getCurrentUser } from "../config/authApi";
 import { type UserStats, UserStatsContext } from "./types";
-import { safeParseJSON } from "../utils/storage";
+import { storage } from "../utils/storage";
 import { UserStatsSchema } from "../utils/schemas";
 import { logger } from "../utils/logger";
+import { STORAGE_KEYS } from "../constants/storageKeys";
 
 export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
   const defaultStats: UserStats = {
@@ -15,8 +16,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const [stats, setStats] = useState<UserStats>(() => {
-    const saved = localStorage.getItem("blaze_casino_user_data");
-    return safeParseJSON(saved, UserStatsSchema, defaultStats);
+    return storage.get(STORAGE_KEYS.USER_DATA, UserStatsSchema, defaultStats);
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,7 +24,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     statsRef.current = stats;
-    localStorage.setItem("blaze_casino_user_data", JSON.stringify(stats));
+    storage.set(STORAGE_KEYS.USER_DATA, stats);
   }, [stats]);
 
   const fetchUserData = async (forceRefresh = false) => {
@@ -32,8 +32,11 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
       const user = await getCurrentUser();
 
       setStats(() => {
-        const saved = localStorage.getItem("blaze_casino_user_data");
-        const savedStats = safeParseJSON(saved, UserStatsSchema, defaultStats);
+        const savedStats = storage.get(
+          STORAGE_KEYS.USER_DATA,
+          UserStatsSchema,
+          defaultStats,
+        );
         const hasSavedData = savedStats.username === user.username;
 
         if (hasSavedData && !forceRefresh) {
@@ -48,10 +51,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
           totalWon: user.totalWon ?? 0,
         };
 
-        localStorage.setItem(
-          "blaze_casino_user_data",
-          JSON.stringify(userData),
-        );
+        storage.set(STORAGE_KEYS.USER_DATA, userData);
         return userData;
       });
     } catch (error) {
@@ -82,6 +82,13 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
     setStats(newStats);
   };
 
+  const deductBetAndUpdateStats = (betAmount: number) => {
+    updateStats(-betAmount, {
+      totalWagered: betAmount,
+      gamesPlayed: 1,
+    });
+  };
+
   const refreshStats = () => fetchUserData(true);
 
   return (
@@ -90,6 +97,7 @@ export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
         ...stats,
         isLoading,
         updateStats,
+        deductBetAndUpdateStats,
         refreshStats,
       }}
     >

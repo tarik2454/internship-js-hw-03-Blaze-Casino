@@ -6,10 +6,6 @@ export interface UseCasesGameReturn {
   isAnimating: boolean;
   selectedCase: CaseType;
   gameResult: number | null;
-  lastResult: {
-    index: number;
-    offset: number;
-  } | null;
   gameAreaRef: React.RefObject<HTMLDivElement | null>;
   setSelectedCase: (caseType: CaseType) => void;
   handleStartAnimation: () => void;

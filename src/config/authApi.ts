@@ -7,6 +7,8 @@ import type { User, AuthResponse } from "../types";
 import { UserSchema, AuthResponseSchema } from "../utils/schemas";
 import { z } from "zod";
 import axios from "axios";
+import { storage } from "../utils/storage";
+import { STORAGE_KEYS } from "../constants/storageKeys";
 
 export const API = axios.create({
   baseURL:
@@ -18,7 +20,7 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
+      storage.remove(STORAGE_KEYS.TOKEN);
       API.defaults.headers.common.Authorization = "";
 
       if (typeof window !== "undefined") {
@@ -30,13 +32,11 @@ API.interceptors.response.use(
 );
 
 export const hasToken = () => {
-  if (typeof localStorage === "undefined") return false;
-  return localStorage.getItem("token") !== null;
+  return storage.getString(STORAGE_KEYS.TOKEN) !== null;
 };
 
 export const initAuthToken = () => {
-  if (typeof localStorage === "undefined") return;
-  const token = localStorage.getItem("token");
+  const token = storage.getString(STORAGE_KEYS.TOKEN);
   if (token) API.defaults.headers.common.Authorization = `Bearer ${token}`;
 };
 
@@ -48,7 +48,7 @@ export const registerUser = async (data: RegisterFormData) =>
 export const loginUser = async (data: LoginFormData) => {
   const response = await API.post("/auth/login", data);
   const authData = AuthResponseSchema.parse(response.data);
-  localStorage.setItem("token", authData.token);
+  storage.set(STORAGE_KEYS.TOKEN, authData.token);
   API.defaults.headers.common.Authorization = `Bearer ${authData.token}`;
   return authData;
 };
@@ -60,7 +60,7 @@ export const getCurrentUser = async (): Promise<User> => {
 
 export const logoutUser = async () => {
   const response = await API.post("/auth/logout");
-  localStorage.removeItem("token");
+  storage.remove(STORAGE_KEYS.TOKEN);
   API.defaults.headers.common.Authorization = "";
   return response.data;
 };

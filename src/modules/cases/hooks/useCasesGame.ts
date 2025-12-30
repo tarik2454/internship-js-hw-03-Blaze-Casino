@@ -8,6 +8,7 @@ import {
   sportsContents,
 } from "../data/icon-contents";
 import { useUserStats } from "../../../context/useUserStats";
+import { validateBet } from "../../../utils/validation";
 import styles from "../GameCases.module.scss";
 
 const CASE_PRICES = {
@@ -24,7 +25,7 @@ export const useCasesGame = (): UseCasesGameReturn => {
     offset: number;
   } | null>(null);
   const [gameResult, setGameResult] = useState<number | null>(null);
-  const { balance, updateStats } = useUserStats();
+  const { balance, updateStats, deductBetAndUpdateStats } = useUserStats();
   const [selectedCase, setSelectedCase] = useState<CaseType>("animal");
 
   const gameAreaRef = useRef<HTMLDivElement>(null);
@@ -90,17 +91,7 @@ export const useCasesGame = (): UseCasesGameReturn => {
     }
   };
 
-  const validateCasePrice = (price: number, balance: number): void => {
-    if (price < 0) {
-      throw new Error("Case price cannot be negative");
-    }
-    if (!Number.isFinite(price)) {
-      throw new Error("Invalid case price");
-    }
-    if (price > balance) {
-      throw new Error("Insufficient balance");
-    }
-  };
+  // validateCasePrice удалена, используется validateBet из utils/validation
 
   const handleStartAnimation = () => {
     if (isAnimating) return;
@@ -116,7 +107,7 @@ export const useCasesGame = (): UseCasesGameReturn => {
 
     const casePrice = CASE_PRICES[selectedCase];
     try {
-      validateCasePrice(casePrice, balance);
+      validateBet(casePrice, balance);
     } catch (error) {
       if (error instanceof Error) {
         toast.warning(error.message);
@@ -126,10 +117,7 @@ export const useCasesGame = (): UseCasesGameReturn => {
 
     setGameResult(null);
 
-    updateStats(-casePrice, {
-      totalWagered: casePrice,
-      gamesPlayed: 1,
-    });
+    deductBetAndUpdateStats(casePrice);
 
     const rarityProbabilities = [
       { rarity: "common" as Rarity, chance: 55, indices: [0, 1, 2, 3, 4] },
@@ -200,7 +188,6 @@ export const useCasesGame = (): UseCasesGameReturn => {
     isAnimating,
     selectedCase,
     gameResult,
-    lastResult,
     gameAreaRef,
     setSelectedCase,
     handleStartAnimation,

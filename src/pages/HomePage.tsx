@@ -3,7 +3,7 @@ import styles from "./HomePage.module.scss";
 import Container from "../shared/components/Container";
 import PageWrapper from "../shared/components/PageWrapper";
 import { Leaderboard } from "../modules/leaderboard/Leaderboard";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { homeTabs } from "../constants/homeTabs";
 import { cx } from "../utils/classNames";
 
@@ -32,7 +32,13 @@ export const HomePage = () => {
             </section>
 
             <div className={styles.gameContent}>
-              {homeTabs.find((tab) => tab.id === activeTab)?.content}
+              <Suspense fallback={<div>Loading game...</div>}>
+                {(() => {
+                  const tab = homeTabs.find((tab) => tab.id === activeTab);
+                  const Component = tab?.Component;
+                  return Component ? <Component /> : null;
+                })()}
+              </Suspense>
             </div>
           </div>
 

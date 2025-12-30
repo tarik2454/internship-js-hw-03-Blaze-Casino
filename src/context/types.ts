@@ -14,6 +14,7 @@ export interface UserStatsContextType extends UserStats {
     amount: number,
     extraStats?: Partial<Omit<UserStats, "balance" | "username">>,
   ) => Promise<void>;
+  deductBetAndUpdateStats: (betAmount: number) => void;
   refreshStats: () => Promise<void>;
 }
 

@@ -10,6 +10,7 @@ export const usePlinkoCanvas = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeBallsRef = useRef<Ball[]>([]);
   const animationFrameRef = useRef<number | undefined>(undefined);
+  const isAnimatingRef = useRef<boolean>(false);
 
   const generatePath = useCallback((lines: number): number[] => {
     const path: number[] = [];
@@ -57,6 +58,10 @@ export const usePlinkoCanvas = ({
       };
 
       activeBallsRef.current = [...activeBallsRef.current, ball];
+      
+      if (!isAnimatingRef.current) {
+        startAnimation();
+      }
     },
     [lines, multipliers, generatePath],
   );
@@ -264,6 +269,45 @@ export const usePlinkoCanvas = ({
     [lines, onBallFinish],
   );
 
+  const startAnimation = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+
+    const animate = () => {
+      const balls = activeBallsRef.current;
+      
+      if (balls.length === 0) {
+        ctx.clearRect(0, 0, width, height);
+        renderBoard(ctx, width, height);
+        renderSlots(ctx, width, height);
+        isAnimatingRef.current = false;
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = undefined;
+        }
+        return;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+      renderBoard(ctx, width, height);
+      renderSlots(ctx, width, height);
+      updateAndDrawBalls(ctx, width, height);
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+  }, [renderBoard, renderSlots, updateAndDrawBalls]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -274,23 +318,22 @@ export const usePlinkoCanvas = ({
     const width = canvas.width;
     const height = canvas.height;
 
-    const animate = () => {
-      ctx.clearRect(0, 0, width, height);
-      renderBoard(ctx, width, height);
-      renderSlots(ctx, width, height);
-      updateAndDrawBalls(ctx, width, height);
+    ctx.clearRect(0, 0, width, height);
+    renderBoard(ctx, width, height);
+    renderSlots(ctx, width, height);
 
-      animationFrameRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
+    if (activeBallsRef.current.length > 0 && !isAnimatingRef.current) {
+      startAnimation();
+    }
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = undefined;
       }
+      isAnimatingRef.current = false;
     };
-  }, [lines, multipliers, renderBoard, renderSlots, updateAndDrawBalls]);
+  }, [lines, multipliers, renderBoard, renderSlots, startAnimation]);
 
   return {
     canvasRef,

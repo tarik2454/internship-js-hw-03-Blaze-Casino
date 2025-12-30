@@ -1,10 +1,6 @@
-export interface LeaderboardUser {
-  _id: string;
-  username: string;
-  gamesPlayed: number | null;
-  balance: number | null;
-  totalWagered: number | null;
-  totalWon: number | null;
+import type { User } from "../../types/index";
+
+export interface LeaderboardUser extends User {
   rank: number;
   winRate: string;
 }
