@@ -44,11 +44,13 @@ export const Leaderboard = () => {
               <div>
                 <div className={styles.username}>{player.username}</div>
                 <div className={styles.gamesPlayed}>
-                  {player.gamesPlayed} games
+                  {player.gamesPlayed ?? 0} games
                 </div>
               </div>
               <div>
-                <div className={styles.win}>${player.balance.toFixed(0)}</div>
+                <div className={styles.win}>
+                  ${(player.balance ?? 0).toFixed(0)}
+                </div>
                 <div className={styles.winRate}>{player.winRate} win</div>
               </div>
             </div>

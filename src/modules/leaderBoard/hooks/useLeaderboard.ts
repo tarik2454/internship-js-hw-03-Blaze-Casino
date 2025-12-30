@@ -62,17 +62,21 @@ export const useLeaderboard = () => {
             ? Math.floor((userTotalWon / userTotalWagered) * 100)
             : 0;
 
-        return {
-          ...user,
+        const leaderboardUser: LeaderboardUser = {
+          _id: user._id,
+          username: user.username,
           balance: userBalance,
           gamesPlayed: userGames,
+          totalWagered: userTotalWagered,
+          totalWon: userTotalWon,
           rank: 0,
           winRate: `${winRate}%`,
         };
+        return leaderboardUser;
       })
       .sort((a, b) => b.balance - a.balance)
       .slice(0, 8)
-      .map((user, index) => ({ ...user, rank: index + 1 }));
+      .map((user, index): LeaderboardUser => ({ ...user, rank: index + 1 }));
   }, [apiUsers, currentUsername, balance, gamesPlayed, totalWon, totalWagered]);
 
   return { leaders, currentUsername };
