@@ -16,10 +16,14 @@ class AuthApi {
   private api: AxiosInstance;
 
   constructor() {
+    const baseURL =
+      import.meta.env.VITE_API_BASE_URL ||
+      (import.meta.env.DEV
+        ? "http://localhost:3000/api"
+        : "https://backend-internship-js-hw-03-sky-rus.vercel.app/api");
+
     this.api = axios.create({
-      baseURL:
-        import.meta.env.VITE_API_BASE_URL ||
-        "https://backend-internship-js-hw-03-sky-rus.vercel.app/api",
+      baseURL,
     });
 
     this.setupInterceptors();
