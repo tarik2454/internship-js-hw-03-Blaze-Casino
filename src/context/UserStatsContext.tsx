@@ -5,12 +5,12 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import { getCurrentUser } from "../config/authApi";
 import { type UserStats, UserStatsContext } from "./types";
 import { storage } from "../utils/storage";
 import { UserStatsSchema } from "../utils/schemas";
 import { logger } from "../utils/logger";
 import { STORAGE_KEYS } from "../constants/storageKeys";
+import { getCurrentUser } from "../api/user";
 
 export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
   const defaultStats: UserStats = {

@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { RISK_ORDER, BALS, LINES } from "../constants";
-import { handleValidationError } from "../../../config/authApi";
 import type {
   PlinkoSettings,
   PlinkoHistoryItem,
@@ -18,6 +17,7 @@ import { getMultipliers } from "../utils/getMultipliers";
 import { usePlinkoCanvas } from "./usePlinkoCanvas";
 import { useUserStats } from "../../../context/useUserStats";
 import { validateInRange } from "../../../utils/validation";
+import { handleValidationError } from "../../../api/auth";
 
 export const usePlinkoGame = (): UsePlinkoGameReturn => {
   const [settings, setSettings] = useState<PlinkoSettings>(() => {
@@ -71,7 +71,6 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
     });
   };
 
-
   const selectBalls = (quantity: number) => {
     try {
       const validQuantities = BALS.map((ball) => ball.quantity);
@@ -110,11 +109,7 @@ export const usePlinkoGame = (): UsePlinkoGameReturn => {
   const currentDropResultsRef = useRef<DropResult[]>([]);
 
   const onBallFinish = useCallback(
-    (ball: {
-      multiplier: number;
-      payout: number;
-      slotIndex: number;
-    }) => {
+    (ball: { multiplier: number; payout: number; slotIndex: number }) => {
       const result: DropResult = {
         multiplier: ball.multiplier,
         payout: ball.payout,

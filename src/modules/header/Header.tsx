@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
-import { logoutUser } from "../../config/authApi";
+import { logoutUser } from "../../api/auth";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Logo } from "../../shared/icons/logo";
@@ -11,7 +11,6 @@ import { Auth } from "../../shared/icons/auth";
 import Modal from "../../shared/components/Modal";
 import { Profile } from "../profile/Profile";
 import { useUserStats } from "../../context/useUserStats";
-import { handleApiError } from "../../config/authApi";
 import { storage } from "../../utils/storage";
 import { STORAGE_KEYS } from "../../constants/storageKeys";
 
@@ -24,17 +23,12 @@ export const Header = () => {
   const toggleModal = () => setIsModalOpen((prevValue) => !prevValue);
 
   const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await logoutUser();
-      toast.success("Successfully logged out!");
-      storage.remove(STORAGE_KEYS.LEADERBOARD_USERS);
-      navigate("/auth/login");
-    } catch (error) {
-      handleApiError(error, "Failed to log out. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    await logoutUser();
+    toast.success("Successfully logged out!");
+    storage.remove(STORAGE_KEYS.LEADERBOARD_USERS);
+    setIsLoading(false);
+    navigate("/auth/login");
   };
 
   return (

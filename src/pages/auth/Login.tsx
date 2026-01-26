@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Auth.module.scss";
 import { loginSchema, type LoginFormData } from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
-import { loginUser, handleApiError } from "../../config/authApi";
+import { loginUser, handleApiError } from "../../api/auth";
 import { toast } from "react-toastify";
 
 import { Input } from "../../shared/components/Input";

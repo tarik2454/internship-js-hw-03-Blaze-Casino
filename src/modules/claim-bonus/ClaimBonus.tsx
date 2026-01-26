@@ -4,7 +4,7 @@ import { Timer } from "../../shared/icons/timer";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useUserStats } from "../../context/useUserStats";
-import { handleApiError } from "../../config/authApi";
+import { handleApiError } from "../../api/auth";
 
 export const ClaimBonus = () => {
   const { updateStats } = useUserStats();

@@ -4,7 +4,8 @@ import styles from "./Profile.module.scss";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../shared/icons/user";
 import { toast } from "react-toastify";
-import { updateUser, handleApiError } from "../../config/authApi";
+import { updateUser } from "../../api/user";
+import { handleApiError } from "../../api/auth";
 import {
   updateUserSchema,
   type UpdateUserFormData,

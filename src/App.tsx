@@ -11,7 +11,7 @@ import { Register } from "./pages/auth/Register";
 import { RootLayout } from "./layouts/RootLayout";
 import { HomePage } from "./pages/HomePage";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
-import { initAuthToken } from "./config/authApi";
+import { initAuthToken } from "./api/auth";
 import { UserStatsProvider } from "./context/UserStatsContext";
 
 initAuthToken();

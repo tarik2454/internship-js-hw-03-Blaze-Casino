@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-import { getAllUsers, handleApiError } from "../../../config/authApi";
+import { getAllUsers } from "../../../api/user";
+import { handleApiError } from "../../../api/auth";
 import type { User } from "../../../types/index";
 import type { LeaderboardUser } from "../types";
 import { useUserStats } from "../../../context/useUserStats";

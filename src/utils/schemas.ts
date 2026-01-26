@@ -19,7 +19,10 @@ export const UserSchema = z
   }));
 
 export const AuthResponseSchema = z.object({
-  token: z.string(),
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  userId: z.string(),
+  userName: z.string().optional(),
 });
 
 export const UserStatsSchema = z.object({
@@ -56,4 +59,3 @@ export const PlinkoHistoryItemSchema = z.object({
 });
 
 export const PlinkoHistoryArraySchema = z.array(PlinkoHistoryItemSchema);
-

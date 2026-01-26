@@ -7,9 +7,8 @@ import {
   type RegisterFormData,
 } from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
-import { registerUser } from "../../config/authApi";
+import { registerUser, handleApiError } from "../../api/auth";
 import { toast } from "react-toastify";
-import { handleApiError } from "../../config/authApi";
 
 import { Input } from "../../shared/components/Input";
 
