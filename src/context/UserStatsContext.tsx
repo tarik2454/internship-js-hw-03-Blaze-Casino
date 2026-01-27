@@ -1,30 +1,37 @@
-import React, { useEffect, useState, useRef } from "react";
-import { getCurrentUser } from "../config/auth-api";
-import { type UserStats, UserStatsContext } from "./UserStatsContextDefinition";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { type UserStats, UserStatsContext } from "./types";
+import { storage } from "../utils/storage";
+import { UserStatsSchema } from "../utils/schemas";
+import { logger } from "../utils/logger";
+import { STORAGE_KEYS } from "../constants/storageKeys";
+import { getCurrentUser } from "../api/user";
 
-export const UserStatsProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const UserStatsProvider = ({ children }: { children: ReactNode }) => {
+  const defaultStats: UserStats = {
+    username: "",
+    balance: 0,
+    totalWagered: 0,
+    gamesPlayed: 0,
+    totalWon: 0,
+  };
+
   const [stats, setStats] = useState<UserStats>(() => {
-    const saved = localStorage.getItem("sky_rush_game_data");
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      username: "",
-      balance: 0,
-      totalWagered: 0,
-      gamesPlayed: 0,
-      totalWon: 0,
-    };
+    return storage.get(STORAGE_KEYS.USER_DATA, UserStatsSchema, defaultStats);
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [activeGames, setActiveGames] = useState<Set<string>>(new Set());
 
   const statsRef = useRef(stats);
 
   useEffect(() => {
     statsRef.current = stats;
-    localStorage.setItem("sky_rush_game_data", JSON.stringify(stats));
+    storage.set(STORAGE_KEYS.USER_DATA, stats);
   }, [stats]);
 
   const fetchUserData = async (forceRefresh = false) => {
@@ -32,15 +39,18 @@ export const UserStatsProvider: React.FC<{ children: React.ReactNode }> = ({
       const user = await getCurrentUser();
 
       setStats(() => {
-        const saved = localStorage.getItem("sky_rush_game_data");
-        const hasSavedData =
-          saved && JSON.parse(saved).username === user.username;
+        const savedStats = storage.get(
+          STORAGE_KEYS.USER_DATA,
+          UserStatsSchema,
+          defaultStats,
+        );
+        const hasSavedData = savedStats.username === user.username;
 
         if (hasSavedData && !forceRefresh) {
-          return JSON.parse(saved);
+          return savedStats;
         }
 
-        const userData = {
+        const userData: UserStats = {
           username: user.username,
           balance: user.balance ?? 100,
           totalWagered: user.totalWagered ?? 0,
@@ -48,11 +58,11 @@ export const UserStatsProvider: React.FC<{ children: React.ReactNode }> = ({
           totalWon: user.totalWon ?? 0,
         };
 
-        localStorage.setItem("sky_rush_game_data", JSON.stringify(userData));
+        storage.set(STORAGE_KEYS.USER_DATA, userData);
         return userData;
       });
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
+      logger.error("Failed to fetch user data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +72,7 @@ export const UserStatsProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchUserData();
   }, []);
 
-  const updateBalance = async (
+  const updateStats = async (
     amount: number,
     extraStats?: Partial<Omit<UserStats, "balance" | "username">>,
   ) => {
@@ -79,15 +89,51 @@ export const UserStatsProvider: React.FC<{ children: React.ReactNode }> = ({
     setStats(newStats);
   };
 
+  const deductBetAndUpdateStats = (betAmount: number) => {
+    updateStats(-betAmount, {
+      totalWagered: betAmount,
+      gamesPlayed: 1,
+    });
+  };
+
   const refreshStats = () => fetchUserData(true);
+
+  const registerGameActivity = useCallback(
+    (gameId: string, isActive: boolean) => {
+      setActiveGames((prev) => {
+        const newSet = new Set(prev);
+        if (isActive) {
+          newSet.add(gameId);
+        } else {
+          newSet.delete(gameId);
+        }
+        return newSet;
+      });
+    },
+    [],
+  );
+
+  const unregisterGameActivity = useCallback((gameId: string) => {
+    setActiveGames((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(gameId);
+      return newSet;
+    });
+  }, []);
+
+  const isAnyGameActive = activeGames.size > 0;
 
   return (
     <UserStatsContext.Provider
       value={{
         ...stats,
         isLoading,
-        updateBalance,
+        updateStats,
+        deductBetAndUpdateStats,
         refreshStats,
+        isAnyGameActive,
+        registerGameActivity,
+        unregisterGameActivity,
       }}
     >
       {children}

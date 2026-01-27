@@ -1,5 +1,4 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
 
 .leaderboardSection {
   padding: 25px;
@@ -21,7 +20,7 @@
 }
 
 .subtitle {
-  color: #cad5e2;
+  color: var(--color-secondary);
   font-weight: 500;
 }
 
@@ -35,7 +34,7 @@
     display: block;
     height: 1px;
     margin-top: 32px;
-    background-color: #314158;
+    background-color: var(--color-border);
 
     content: "";
   }
@@ -49,7 +48,7 @@
     gap: 12px;
     border-radius: 10px;
     background: rgb(15 23 43 / 50%);
-    transition: $transition-base;
+    transition: var(--transition-base);
 
     &:hover {
       background: linear-gradient(
@@ -74,14 +73,14 @@
 }
 
 .gamesPlayed {
-  color: $color-secondary;
+  color: var(--color-secondary);
   font-weight: 500;
   font-size: 12px;
 }
 
 .win {
   -webkit-text-fill-color: transparent;
-  background: linear-gradient(90deg, #0000 0%, #51a2ffff 0%, #c27affff 100%);
+  background: linear-gradient(90deg, transparent 0%, #51a2ff 0%, #c27aff 100%);
   background-clip: text;
   color: transparent;
   font-weight: 700;
@@ -89,17 +88,17 @@
 }
 
 .winRate {
-  color: #90a1b9;
+  color: var(--color-text-muted);
   font-weight: 500;
   font-size: 12px;
 }
 
 .currentUser {
-  border: 1px solid $color-primary !important;
-  background: rgba($color-primary, 0.1) !important;
+  border: 1px solid var(--color-primary) !important;
+  background: color-mix(in srgb, #fff, transparent 90%) !important;
 
   .username {
-    color: $color-primary;
+    color: var(--color-primary);
     font-weight: 700;
   }
 }
@@ -107,22 +106,22 @@
 .ownRank {
   display: block;
   padding-top: 18px;
-  border-top: 1px solid rgb(49 65 88 / 100%);
-  color: $color-secondary;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-secondary);
   font-weight: 500;
   text-align: center;
 }
 
 .loading {
   padding: 40px;
-  color: $color-secondary;
+  color: var(--color-secondary);
   font-size: 16px;
   text-align: center;
 }
 
 .error {
   padding: 40px;
-  color: #ff6b6b;
+  color: var(--color-red-error);
   font-size: 16px;
   text-align: center;
 }

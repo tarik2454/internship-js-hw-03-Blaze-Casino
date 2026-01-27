@@ -1,14 +1,13 @@
-@use "../styles/variables" as *;
-@use "../styles/mixins" as *;
+@use "../styles" as *;
 
 .homePage {
-  display: grid;
-  grid-template-columns: 1fr 315px;
-  gap: 24px;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
 
-  @include mobile {
-    grid-template-rows: 1fr auto;
-    grid-template-columns: 1fr;
+  @include tablet {
+    display: grid;
+    grid-template-columns: 1fr 315px;
+    gap: 24px;
   }
 }
 
@@ -18,23 +17,24 @@
   padding: 4px;
   gap: 8px;
   border: 1px solid rgb(20 71 230 / 30%);
-  border-radius: $radius-14;
+  border-radius: var(--radius-14);
   background: rgb(29 41 61 / 50%);
 }
 
 .sideColumn {
   display: flex;
   flex-direction: column;
+  margin-top: 24px;
   gap: 24px;
 }
 
 .gameButton {
   padding: 4.5px 15px;
   border: 1px solid rgb(0 0 0 / 0%);
-  border-radius: $radius-14;
+  border-radius: var(--radius-14);
 
   background: transparent;
-  color: #cad5e2;
+  color: var(--color-secondary);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -46,12 +46,17 @@
 
   &.isActive {
     border: 1px solid rgb(0 0 0 / 0%);
-    background: linear-gradient(
-      90deg,
-      rgb(21.32 92.93 251.52 / 100%),
-      rgb(152.19 15.74 250.25 / 100%) 100%
-    );
+    background: linear-gradient(90deg, #155dfc 0%, #9810fa 100%);
     color: white;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    
+    &:hover {
+      background: transparent;
+    }
   }
 }
 

@@ -4,13 +4,16 @@ import styles from "./Profile.module.scss";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "../../shared/icons/user";
 import { toast } from "react-toastify";
-import { updateUser } from "../../config/auth-api";
-import { AxiosError } from "axios";
+import { updateUser } from "../../api/user";
+import { handleApiError } from "../../api/auth";
 import {
   updateUserSchema,
   type UpdateUserFormData,
-} from "../../utils/zod-validation";
-import { useUserStats } from "../../hooks/useUserStats";
+} from "../../utils/zodValidation";
+import { useUserStats } from "../../context/useUserStats";
+import { cx } from "../../utils/classNames";
+import { storage } from "../../utils/storage";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
 
 export const Profile = () => {
   const {
@@ -52,11 +55,10 @@ export const Profile = () => {
         totalWon: 0,
       });
       await refreshStats();
-      localStorage.removeItem("sky_rush_game_data");
+      storage.remove(STORAGE_KEYS.USER_DATA);
       toast.success("Account reset successfully!");
     } catch (error) {
-      console.error("Failed to reset account:", error);
-      toast.error("Failed to reset account");
+      handleApiError(error, "Failed to reset account");
     }
   };
 
@@ -72,12 +74,7 @@ export const Profile = () => {
       await refreshStats();
       toast.success("Profile updated successfully!");
     } catch (err: unknown) {
-      console.error(err);
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data?.message || "Profile update failed");
-      } else {
-        toast.error("Profile update failed");
-      }
+      handleApiError(err, "Profile update failed");
     }
   };
 
@@ -106,7 +103,7 @@ export const Profile = () => {
               placeholder={isLoadingUser ? "Loading..." : "Username"}
               disabled={isLoadingUser}
               {...register("username")}
-              className={errors.username ? "errorInput" : ""}
+              className={cx(errors.username && "errorInput")}
             />
           </div>
           {errors.username && (

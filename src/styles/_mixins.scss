@@ -11,7 +11,19 @@
 }
 
 @mixin mobile {
-  @media (width < 768px) {
+  @media screen and (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 992px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: 1280px) {
     @content;
   }
 }
@@ -64,4 +76,20 @@
       rgba(225.36, 113.05, 0, 1) 100%
     );
   }
+}
+
+@mixin slide-down-animation {
+  @keyframes slideDown {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  animation: slideDown 0.2s ease-out;
 }

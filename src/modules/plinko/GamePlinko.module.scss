@@ -1,0 +1,396 @@
+@use "../../styles/index" as *;
+
+.gamePlinko {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-primary);
+}
+
+.groupTitle {
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+
+  @media screen and (min-width: 990px) {
+    display: none;
+  }
+}
+
+.gameInner {
+  display: grid;
+  align-items: start;
+  gap: 24px;
+
+  @media screen and (min-width: 1025px) {
+    grid-template-columns: 1fr 218px;
+  }
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settingsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plinkoCanvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.dropItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background: var(--color-bg-input);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--color-primary);
+    background: rgba(21, 93, 252, 0.1);
+  }
+}
+
+.dropMultiplier {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.dropMultiplierWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.dropMain {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+.dropMeta {
+  display: flex;
+  gap: 4px;
+}
+
+.dropBallsCount {
+  font-weight: 400;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.dropInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.dropPayout {
+  color: #fff;
+  font-weight: 600;
+}
+
+.gameAreaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.gameArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 463px;
+  padding: 20px;
+  overflow: hidden;
+  border: 2px solid #ad46ff4d;
+  border-radius: var(--radius-14);
+  background: linear-gradient(135deg, #0f172b 0%, #1d293d 100%);
+}
+
+.pinRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.pin {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ad46ff;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 0 8px;
+  overflow-x: auto;
+  gap: 4px;
+}
+
+.slot {
+  flex-shrink: 0;
+  min-width: 20px;
+  padding: 8px 1px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-8);
+  color: #fff;
+  font-weight: 700;
+  font-size: 8px;
+  text-align: center;
+  transition: var(--transition-base);
+}
+
+.slotred {
+  border-color: #ff3333;
+  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
+.slotorange {
+  border-color: #ff9933;
+  background: linear-gradient(135deg, #ff6900 0%, #ff8800 100%);
+  box-shadow: 0 2px 8px rgba(255, 105, 0, 0.3);
+}
+
+.slotyellow {
+  border-color: #ffeb3b;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  color: #000;
+}
+
+.slotgreen {
+  border-color: #33ff33;
+  background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+  box-shadow: 0 2px 8px rgba(0, 255, 0, 0.3);
+  color: #000;
+}
+
+.cardDropsTitle {
+  color: #90a1b9;
+  font-size: 16px;
+}
+
+.cardDropsList {
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+  gap: 8px;
+}
+
+.cardDropsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background: var(--color-bg-input);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--color-primary);
+    background: rgba(21, 93, 252, 0.1);
+  }
+}
+
+.cardDropsMultiplier {
+  min-width: 60px;
+  font-weight: 700;
+  font-size: 18px;
+  text-align: left;
+}
+
+.cardDropsInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.cardDropsPayout {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cardDropsTime {
+  color: var(--color-text-label);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.cardDropsEmpty {
+  padding: 24px;
+  color: #90a1b9;
+  font-size: 16px;
+  text-align: center;
+}
+
+.cardTitle {
+  margin-bottom: 12px;
+  color: var(--color-text-label);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.card {
+  padding: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-10);
+  background: #0f172b80;
+}
+
+.cardGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.cardRisk {
+  display: grid;
+  grid-template-columns: 1fr 62px 1fr;
+  gap: 8px;
+}
+
+.cardRiskButton {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #45556c;
+  background-color: var(--color-bg-input);
+  box-shadow: none !important;
+  color: var(--color-primary) !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--color-primary);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.cardRiskValue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 12px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background-color: var(--color-bg-input);
+  color: var(--color-primary);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ballsGroup {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.ballBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding: 5px 0;
+  gap: 8px;
+  border: 1px solid #45556c;
+  border-radius: var(--radius-8);
+  background: var(--color-bg-input);
+  box-shadow: none !important;
+
+  &:hover,
+  &.active {
+    border: 2px solid #ff6900;
+    background: linear-gradient(90deg, #155dfc 0%, #9810fa 100%);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.ballQuantity {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.ballCost {
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.linesGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.lineBtn {
+  max-width: 56px;
+  max-height: 48px;
+}
+
+.cardLinesValue {
+  font-weight: 500;
+}
+
+.startBtn {
+  width: 100%;
+  padding: 18px 0;
+  border-radius: var(--radius-8);
+  background: #22c55e;
+  color: #fff;
+  font-weight: 500;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

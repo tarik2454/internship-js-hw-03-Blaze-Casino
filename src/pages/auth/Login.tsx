@@ -1,11 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { AxiosError } from "axios";
 import styles from "./Auth.module.scss";
-import { loginSchema, type LoginFormData } from "../../utils/zod-validation";
+import { loginSchema, type LoginFormData } from "../../utils/zodValidation";
 import { Auth } from "../../shared/icons/auth";
-import { loginUser } from "../../config/auth-api";
+import { loginUser, handleApiError } from "../../api/auth";
 import { toast } from "react-toastify";
 
 import { Input } from "../../shared/components/Input";
@@ -20,8 +19,8 @@ export const Login = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "test-user@gmail.com",
+      password: "123456",
     },
   });
 
@@ -32,12 +31,7 @@ export const Login = () => {
 
       navigate("/");
     } catch (err: unknown) {
-      console.error(err);
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data?.message || "Invalid credentials");
-      } else {
-        toast.error("Invalid credentials");
-      }
+      handleApiError(err, "Invalid credentials");
     }
   };
 

@@ -1,5 +1,4 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
 
 .casesTitle {
   margin-bottom: 16px;
@@ -44,15 +43,15 @@
     transform: translate(-50%, -50%);
     background: linear-gradient(
       90deg,
-      #ffffff 0%,
-      #ffffff 33%,
-      #fdc700 33%,
-      #f0b100 80%,
+      var(--color-primary) 0%,
+      var(--color-primary) 33%,
+      var(--color-yellow) 33%,
+      var(--color-yellow-dark) 80%,
       #d08700 100%
     );
     box-shadow:
-      0px 10px 15px -3px #f0b100,
-      0px 4px 6px -4px #f0b100;
+      0px 10px 15px -3px var(--color-yellow-dark),
+      0px 4px 6px -4px var(--color-yellow-dark);
     content: "";
   }
 }
@@ -76,7 +75,7 @@
   width: 130px;
   height: 180px;
   border-top: 2px solid #0000001a;
-  border-radius: $radius-10;
+  border-radius: var(--radius-10);
   background: linear-gradient(135deg, #45556c 0%, #314158 100%);
   box-shadow: 0px 4px 6px -4px #62748e80;
   box-shadow: 0px 10px 15px -3px #62748e80;
@@ -89,7 +88,7 @@
 }
 
 .itemValue {
-  color: #ffffff;
+  color: var(--color-primary);
   font-weight: 700;
   font-size: 18px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -97,7 +96,7 @@
 
 .itemValueSmall {
   margin-top: 4px;
-  color: #ffffff;
+  color: var(--color-primary);
   font-weight: 700;
   font-size: 12px;
 }
@@ -110,7 +109,7 @@
   border-radius: 10px;
   background: rgba(15, 23, 43, 0.5);
   text-align: center;
-  transition: $transition-base;
+  transition: var(--transition-base);
 
   &:hover,
   &.active,
@@ -161,7 +160,7 @@
 }
 
 .price {
-  color: #05df72;
+  color: var(--color-success);
   font-weight: 700;
 }
 
@@ -176,7 +175,7 @@
     rgba(0, 166.08, 61.71, 1),
     rgba(0, 152.73, 101.74, 1) 100%
   );
-  transition: $transition-base;
+  transition: var(--transition-base);
 
   &:disabled {
     background: linear-gradient(90deg, #45556c 0%, #314158 100%);
@@ -238,7 +237,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #cad5e2;
+  color: var(--color-secondary);
 }
 
 .rarityСircle {
@@ -297,5 +296,5 @@
 }
 
 .rarityPercent {
-  color: #62748e;
+  color: var(--color-gray-light);
 }

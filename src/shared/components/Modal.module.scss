@@ -1,5 +1,4 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
 
 .backdrop {
   display: flex;
@@ -51,7 +50,7 @@
   right: 17px;
   border: none;
   background: none;
-  color: $color-secondary;
+  color: var(--color-secondary);
   cursor: pointer;
 
   &:hover {
@@ -65,7 +64,7 @@
 }
 
 .error {
-  color: $color-danger;
+  color: var(--color-danger);
   font-size: 1.2rem;
   text-align: center;
 }

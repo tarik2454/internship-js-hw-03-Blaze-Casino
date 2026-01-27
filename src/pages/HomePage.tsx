@@ -1,13 +1,25 @@
-import { ClaimBonus } from "../modules/claimBonus/ClaimBonus";
+import { ClaimBonus } from "../modules/claim-bonus/ClaimBonus";
 import styles from "./HomePage.module.scss";
 import Container from "../shared/components/Container";
 import PageWrapper from "../shared/components/PageWrapper";
-import { Leaderboard } from "../modules/leaderBoard/Leaderboard";
-import { useState } from "react";
-import { homeTabs } from "../constants/home-tabs";
+import { Leaderboard } from "../modules/leaderboard/Leaderboard";
+import { useState, Suspense } from "react";
+import { homeTabs } from "../constants/homeTabs";
+import { cx } from "../utils/classNames";
+import { useUserStats } from "../context/useUserStats";
+import { toast } from "react-toastify";
 
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState(homeTabs[0].id);
+  const { isAnyGameActive } = useUserStats();
+
+  const handleTabChange = (tabId: typeof homeTabs[number]["id"]) => {
+    if (isAnyGameActive && tabId !== activeTab) {
+      toast.warning("Please finish the current game before switching tabs");
+      return;
+    }
+    setActiveTab(tabId);
+  };
 
   return (
     <PageWrapper>
@@ -19,8 +31,12 @@ export const HomePage = () => {
                 <button
                   key={tab.id}
                   type="button"
-                  className={`${styles.gameButton} ${activeTab === tab.id ? styles.isActive : ""}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  className={cx(
+                    styles.gameButton,
+                    activeTab === tab.id && styles.isActive,
+                  )}
+                  onClick={() => handleTabChange(tab.id)}
+                  disabled={isAnyGameActive && tab.id !== activeTab}
                 >
                   {tab.label}
                 </button>
@@ -28,7 +44,13 @@ export const HomePage = () => {
             </section>
 
             <div className={styles.gameContent}>
-              {homeTabs.find((tab) => tab.id === activeTab)?.content}
+              <Suspense fallback={<div>Loading game...</div>}>
+                {(() => {
+                  const tab = homeTabs.find((tab) => tab.id === activeTab);
+                  const Component = tab?.Component;
+                  return Component ? <Component /> : null;
+                })()}
+              </Suspense>
             </div>
           </div>
 

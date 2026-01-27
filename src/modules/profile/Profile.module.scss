@@ -1,5 +1,4 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
 
 .profileTitle {
   margin-bottom: 9px;
@@ -8,7 +7,7 @@
 
 .profileSubtitle {
   margin-bottom: 32px;
-  color: #90a1b9;
+  color: var(--color-text-muted);
 }
 
 .labelWrapper {
@@ -23,27 +22,27 @@
 
   label {
     display: block;
-    color: #cad5e2;
+    color: var(--color-secondary);
     font-weight: 500;
   }
 
   input {
     width: 100%;
     padding: 9.5px 12px;
-    border: 1px solid rgb(49 65 88 / 100%);
-    border-radius: $radius-8;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-8);
     border-radius: 8px;
-    background: rgb(29 41 61 / 100%);
+    background: var(--color-bg-input);
     box-shadow: 0 0 0 0.49px rgb(161 161 161 / 8%);
-    color: #cad5e2;
-    transition: $transition-base;
+    color: var(--color-secondary);
+    transition: var(--transition-base);
 
     &::placeholder {
-      color: #717182;
+      color: var(--color-text-secondary-alt);
     }
 
     &:focus {
-      border-color: $color-primary;
+      border-color: var(--color-primary);
       outline: none;
       background: rgb(0 0 0 / 30%);
     }
@@ -54,7 +53,7 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 8px;
-  color: #90a1b9;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 
@@ -62,12 +61,12 @@
   margin-bottom: 24px;
   padding: 16px;
   border-radius: 10px;
-  background: rgb(29 41 61 / 50%);
+  background: color-mix(in srgb, #1d293d 50%, transparent);
 }
 
 .titleStats {
   margin-bottom: 8px;
-  color: $color-secondary;
+  color: var(--color-secondary);
   font-size: 16px;
 }
 
@@ -80,7 +79,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  color: #90a1b9;
+  color: var(--color-text-muted);
 }
 
 .balance {
@@ -90,7 +89,7 @@
   span {
     display: block;
     margin-top: 4px;
-    color: $color-primary;
+    color: var(--color-primary);
   }
 }
 
@@ -101,11 +100,7 @@
 }
 
 .saveBtn {
-  background: linear-gradient(
-    90deg,
-    rgb(21.32 92.93 251.52 / 100%),
-    rgb(152.19 15.74 250.25 / 100%) 100%
-  );
+  background: linear-gradient(90deg, #155dfc 0%, #9810fa 100%);
 }
 
 .resetBtn {

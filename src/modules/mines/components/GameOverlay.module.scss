@@ -1,0 +1,34 @@
+@use "../../../styles" as *;
+
+.gameOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 17px;
+  gap: 12px;
+  border: 1px solid color-mix(in srgb, #e7000b 50%, transparent);
+  border-radius: var(--radius-10);
+  background: color-mix(in srgb, #82181a 30%, transparent);
+
+  &.won {
+    border-color: color-mix(in srgb, #00a63e 50%, transparent);
+    background: color-mix(in srgb, #188241 30%, transparent);
+  }
+}
+
+.gameOverlayTitle {
+  color: var(--color-red-error);
+  font-weight: 700;
+  font-size: 16px;
+
+  &.won {
+    color: var(--color-green-80-success);
+  }
+}
+
+.wonAmount {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}

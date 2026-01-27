@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Modal.module.scss";
+import { cx } from "../../utils/classNames";
 
 type ModalProps = {
   isOpen: boolean;
@@ -48,15 +49,11 @@ export default function Modal({
     createPortal(
       <>
         <div
-          className={`${styles.backdrop} ${isOpen ? styles.open : ""} ${
-            stylesBackdrop || ""
-          }`}
+          className={cx(styles.backdrop, isOpen && styles.open, stylesBackdrop)}
           onClick={handleBackdropClick}
         >
           <div
-            className={`${styles.content} ${isOpen ? styles.open : ""} ${
-              stylesContent || ""
-            }`}
+            className={cx(styles.content, isOpen && styles.open, stylesContent)}
           >
             <button className={styles.closeButton} onClick={onClose}>
               ×

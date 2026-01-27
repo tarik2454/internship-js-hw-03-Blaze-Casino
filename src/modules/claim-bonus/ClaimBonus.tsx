@@ -3,10 +3,11 @@ import styles from "./ClaimBonus.module.scss";
 import { Timer } from "../../shared/icons/timer";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useUserStats } from "../../hooks/useUserStats";
+import { useUserStats } from "../../context/useUserStats";
+import { handleApiError } from "../../api/auth";
 
 export const ClaimBonus = () => {
-  const { updateBalance } = useUserStats();
+  const { updateStats } = useUserStats();
   const [lastBonusClaimTime, setLastBonusClaimTime] = useState<number | null>(
     null,
   );
@@ -24,12 +25,11 @@ export const ClaimBonus = () => {
     }
 
     try {
-      await updateBalance(10);
+      await updateStats(10);
       setLastBonusClaimTime(now);
       toast.success("Bonus claimed!");
     } catch (error) {
-      console.error("Failed to claim bonus:", error);
-      toast.error("Failed to claim bonus");
+      handleApiError(error, "Failed to claim bonus");
     }
   };
   const [timeRemaining, setTimeRemaining] = useState<number>(0);

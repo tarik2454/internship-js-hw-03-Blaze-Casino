@@ -1,2 +1,112 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
+
+.mainSection {
+  display: grid;
+  gap: 24px;
+
+  @media screen and (min-width: 1150px) {
+    grid-template-columns: 1fr 299px;
+  }
+}
+
+.gameContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gameHeader {
+  @include flex-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.gameTitle {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.headerCounters {
+  display: flex;
+  gap: 16px;
+}
+
+.headerCounterItem {
+  color: var(--color-secondary);
+  font-size: 16px;
+}
+
+.headerCounterItemCount {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.headerCounterItemMultiplier {
+  color: var(--color-purple-light);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.gameBoard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 352px;
+  padding: 24px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, #ad46ff 30%, transparent);
+  border-radius: var(--radius-14);
+  background:
+    url("/mines/place-bet.svg") center no-repeat,
+    linear-gradient(135deg, #0f172b 0%, #1d293d 100%);
+
+  &.playing {
+    background: linear-gradient(135deg, #0f172b 0%, #1d293d 100%);
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tipsCard {
+  padding: 17px;
+  border: 1px solid color-mix(in srgb, #2b7fff 30%, transparent);
+  border-radius: var(--radius-10);
+  background: linear-gradient(
+    135deg,
+    rgba(28, 57, 142, 0.2) 0%,
+    rgba(89, 22, 139, 0.2) 100%
+  );
+}
+
+.cardTitleTips {
+  margin-bottom: 8px;
+  color: var(--color-blue-light);
+}
+
+.tipsList {
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  gap: 4px;
+
+  li {
+    position: relative;
+    color: var(--color-secondary);
+
+    &::before {
+      position: absolute;
+      top: 4px;
+      left: -15px;
+      content: "●";
+      color: var(--color-secondary);
+      font-size: 6px;
+      line-height: 1;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
-import { logoutUser } from "../../config/auth-api";
+import { logoutUser } from "../../api/auth";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Logo } from "../../shared/icons/logo";
@@ -10,7 +10,9 @@ import { Settings } from "../../shared/icons/settings";
 import { Auth } from "../../shared/icons/auth";
 import Modal from "../../shared/components/Modal";
 import { Profile } from "../profile/Profile";
-import { useUserStats } from "../../hooks/useUserStats";
+import { useUserStats } from "../../context/useUserStats";
+import { storage } from "../../utils/storage";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -21,19 +23,12 @@ export const Header = () => {
   const toggleModal = () => setIsModalOpen((prevValue) => !prevValue);
 
   const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await logoutUser();
-      toast.success("Successfully logged out!");
-      localStorage.removeItem("sky_rush_game_data");
-      localStorage.removeItem("leaderboard_users");
-      navigate("/auth/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Failed to log out. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    await logoutUser();
+    toast.success("Successfully logged out!");
+    storage.remove(STORAGE_KEYS.LEADERBOARD_USERS);
+    setIsLoading(false);
+    navigate("/auth/login");
   };
 
   return (

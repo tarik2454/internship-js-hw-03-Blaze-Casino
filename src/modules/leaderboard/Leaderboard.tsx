@@ -1,11 +1,13 @@
-import { LeaderBoard } from "../../shared/icons/leaserboard";
+import { memo } from "react";
+import { LeaderBoard } from "../../shared/icons/leaderboard";
 import styles from "./Leaderboard.module.scss";
 import { Place1 } from "../../shared/icons/place1";
 import { Place2 } from "../../shared/icons/place2";
 import { Place3 } from "../../shared/icons/place3";
 import { useLeaderboard } from "./hooks/useLeaderboard";
+import { cx } from "../../utils/classNames";
 
-export const Leaderboard = () => {
+export const Leaderboard = memo(() => {
   const { leaders, currentUsername } = useLeaderboard();
 
   return (
@@ -22,9 +24,10 @@ export const Leaderboard = () => {
         {leaders.map((player) => (
           <li
             key={player._id}
-            className={`${player.rank <= 3 ? styles.topRank : ""} ${
-              player.username === currentUsername ? styles.currentUser : ""
-            }`}
+            className={cx(
+              player.rank <= 3 && styles.topRank,
+              player.username === currentUsername && styles.currentUser,
+            )}
           >
             <div className={styles.rank}>
               {player.rank === 1 ? (
@@ -42,11 +45,13 @@ export const Leaderboard = () => {
               <div>
                 <div className={styles.username}>{player.username}</div>
                 <div className={styles.gamesPlayed}>
-                  {player.gamesPlayed} games
+                  {player.gamesPlayed ?? 0} games
                 </div>
               </div>
               <div>
-                <div className={styles.win}>${player.balance.toFixed(0)}</div>
+                <div className={styles.win}>
+                  ${(player.balance ?? 0).toFixed(0)}
+                </div>
                 <div className={styles.winRate}>{player.winRate} win</div>
               </div>
             </div>
@@ -63,4 +68,4 @@ export const Leaderboard = () => {
       )}
     </section>
   );
-};
+});

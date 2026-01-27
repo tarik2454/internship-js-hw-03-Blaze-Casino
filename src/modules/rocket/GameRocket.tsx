@@ -1,80 +1,48 @@
-import { useState, useRef, useEffect } from "react";
-import { toast } from "react-toastify";
+import { useEffect } from "react";
 import styles from "./GameRocket.module.scss";
-import { useUserStats } from "../../hooks/useUserStats";
-
-type GameState = "IDLE" | "BETTING" | "FLYING" | "CRASHED" | "CASHOUT";
+import { useRocketGame } from "./hooks/useRocketGame";
+import { GameResultPopup } from "../../shared/components/GameResultPopup";
+import { cx } from "../../utils/classNames";
+import { useUserStats } from "../../context/useUserStats";
 
 export const GameRocket = () => {
-  const { balance, updateBalance } = useUserStats();
-  const [betAmount, setBetAmount] = useState(10);
-  const [multiplier, setMultiplier] = useState(1);
-  const [lastWin, setLastWin] = useState(0);
-  const [gameState, setGameState] = useState<GameState>("IDLE");
+  const { registerGameActivity, unregisterGameActivity } = useUserStats();
+  const {
+    betAmount,
+    multiplier,
+    lastWin,
+    gameState,
+    gameResult,
+    isGameActive,
+    setBetAmount,
+    startGame,
+    cashOut,
+    setGameResult,
+  } = useRocketGame();
 
-  const requestRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
-
-  const startGame = () => {
-    if (balance < betAmount) return toast.warning("Insufficient balance!");
-
-    const crashPoint = 1 + Math.pow(Math.random(), 2) * 9;
-    updateBalance(-betAmount, {
-      totalWagered: betAmount,
-      gamesPlayed: 1,
-    });
-
-    setGameState("FLYING");
-    setMultiplier(1);
-    setLastWin(0);
-    startTimeRef.current = Date.now();
-
-    const animate = () => {
-      const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      const currentMultiplier = 1 + Math.pow(elapsed, 2) * 0.1;
-
-      if (currentMultiplier >= crashPoint) {
-        setGameState("CRASHED");
-        setMultiplier(crashPoint);
-        return;
-      }
-
-      setMultiplier(currentMultiplier);
-      requestRef.current = requestAnimationFrame(animate);
+  useEffect(() => {
+    registerGameActivity("rocket", isGameActive);
+    return () => {
+      unregisterGameActivity("rocket");
     };
-
-    requestRef.current = requestAnimationFrame(animate);
-  };
-
-  const handleCashOut = (finalMultiplier: number) => {
-    cancelAnimationFrame(requestRef.current);
-    const winAmount = betAmount * finalMultiplier;
-    updateBalance(winAmount, {
-      totalWon: winAmount,
-    });
-    setLastWin(winAmount);
-    setMultiplier(finalMultiplier);
-    setGameState("CASHOUT");
-  };
-
-  const cashOut = () => {
-    if (gameState === "FLYING") handleCashOut(multiplier);
-  };
-
-  useEffect(() => () => cancelAnimationFrame(requestRef.current), []);
-
-  const isGameActive = gameState === "FLYING";
-
-  // TODO: enum
+  }, [isGameActive, registerGameActivity, unregisterGameActivity]);
 
   return (
     <section>
+      {gameResult !== null && (
+        <GameResultPopup
+          profit={gameResult}
+          onClose={() => setGameResult(null)}
+        />
+      )}
       <div className={styles.gameArea}>
         <div className={styles.multiplierContainer}>
           <span
-            className={`${styles.multiplier} ${
-              gameState === "CRASHED" ? styles.crashed : ""
-            } ${gameState === "CASHOUT" ? styles.success : ""}`}
+            className={cx(
+              styles.multiplier,
+              gameState === "CRASHED" && styles.crashed,
+              gameState === "CASHOUT" && styles.success,
+            )}
           >
             {multiplier.toFixed(2)}x
           </span>

@@ -1,0 +1,167 @@
+@use "../../../styles" as *;
+
+.cardTitle {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.card {
+  padding: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-10);
+  background: color-mix(in srgb, #0f172b 50%, transparent);
+}
+
+.controlGroup {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text-label);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.input {
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.quickBets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.betOption {
+  padding: 8px 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-4);
+  background: var(--color-bg-input);
+  color: var(--color-secondary);
+  font-size: 13px;
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+
+    &:hover {
+      border-color: var(--color-border);
+      color: var(--color-secondary);
+    }
+  }
+}
+
+.minesOptions {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.mineOption {
+  padding: 8px 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-4);
+  background: var(--color-bg-input);
+  color: var(--color-secondary);
+  font-size: 13px;
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+
+    &:hover {
+      border-color: var(--color-border);
+      color: var(--color-secondary);
+    }
+  }
+
+  &.active {
+    border-color: var(--color-blue-active);
+    background: linear-gradient(90deg, #155dfc 0%, #9810fa 100%);
+    color: white;
+  }
+}
+
+.startGameBtn {
+  @include flex-center;
+  width: 100%;
+  padding: 8px 0;
+  gap: 16px;
+  border: none;
+  border-radius: var(--radius-8);
+  background: linear-gradient(90deg, #00a63e 0%, #009966 100%);
+  color: var(--color-primary);
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &.playing {
+    position: relative;
+    background: transparent;
+    color: white;
+    animation: pulseOpacity 2s ease-in-out infinite;
+
+    &::before {
+      z-index: -1;
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-8);
+      background: linear-gradient(90deg, #d08700 0%, #f54900 100%);
+      content: "";
+      animation: pulseOpacity 2s ease-in-out infinite;
+    }
+
+    &:hover {
+      animation: none;
+
+      &::before {
+        animation: none;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+@keyframes pulseOpacity {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.btnIcon {
+  font-weight: 400;
+  font-size: 16px;
+  opacity: 0.8;
+}
+

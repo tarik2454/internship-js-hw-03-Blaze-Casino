@@ -1,5 +1,4 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
 
 .form {
   display: flex;
@@ -23,7 +22,7 @@
   background-size: 200% 100%;
   color: #fff;
   font-size: 16px;
-  transition: $transition-base;
+  transition: var(--transition-base);
 
   &:hover {
     background-position: right;
@@ -35,7 +34,7 @@
 }
 
 .link {
-  color: #51a2ff;
+  color: var(--color-blue-accent);
   text-decoration: none;
 
   &:hover {

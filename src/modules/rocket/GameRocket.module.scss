@@ -1,5 +1,4 @@
-@use "../../styles/variables" as *;
-@use "../../styles/mixins" as *;
+@use "../../styles" as *;
 
 .gameArea {
   @include flex-center;
@@ -9,12 +8,12 @@
   height: 317px;
   margin-bottom: 17px;
   border-radius: 4px;
-  background-color: #1a1d28;
+  background-color: var(--color-bg-secondary);
 }
 
 .label {
   margin-bottom: 8.5px;
-  color: $color-secondary;
+  color: var(--color-secondary);
   font-weight: 500;
   font-size: 16px;
 }
@@ -30,8 +29,9 @@
     height: 100%;
     padding: 10px 12px;
     border: 1px solid rgb(49 65 88 / 100%);
-    border-radius: $radius-8;
+    border-radius: var(--radius-8);
     background: rgb(15 23 43 / 100%);
+    color: var(--color-primary);
     opacity: 0.5;
   }
 
@@ -39,7 +39,7 @@
   .cashoutBtn {
     width: 100%;
     padding: 8px 0;
-    border-radius: $radius-8;
+    border-radius: var(--radius-8);
     font-weight: 500;
   }
 
@@ -66,7 +66,7 @@
     border: 1px solid rgb(49 65 88 / 100%);
     border-radius: 4px;
     background: rgb(15 23 43 / 50%);
-    color: $color-secondary;
+    color: var(--color-secondary);
     font-weight: 500;
     opacity: 0.5;
   }
@@ -90,13 +90,13 @@
   text-shadow: 0 0 20px rgb(255 255 255 / 20%);
 
   &.crashed {
-    color: $color-danger;
+    color: var(--color-danger);
   }
 }
 
 .crashedText {
   margin-top: 8px;
-  color: $color-danger;
+  color: var(--color-danger);
   font-weight: 700;
   font-size: 1.5rem;
   letter-spacing: 2px;
@@ -134,12 +134,12 @@
 }
 
 .success {
-  color: $color-success;
+  color: var(--color-success);
 }
 
 .winText {
   margin-top: 8px;
-  color: $color-success;
+  color: var(--color-success);
   font-weight: 700;
   font-size: 1.5rem;
   letter-spacing: 2px;

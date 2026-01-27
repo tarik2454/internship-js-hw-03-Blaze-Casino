@@ -1,5 +1,4 @@
-@use "../styles/variables" as *;
-@use "../styles/mixins" as *;
+@use "../styles" as *;
 
 .authContainer {
   @include flex-center;
@@ -15,7 +14,7 @@
   max-width: 440px;
   padding: 33px;
   border: 1px solid rgb(0 122 85 / 50%);
-  border-radius: $radius-14;
+  border-radius: var(--radius-14);
   background: rgb(29 41 61 / 80%);
 
   .header {
@@ -32,7 +31,7 @@
     }
 
     .subtitle {
-      color: #90a1b9;
+      color: var(--color-text-muted);
       font-size: 16px;
     }
   }
